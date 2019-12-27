@@ -1,0 +1,17 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"files.eol": "\n",
+	"debug.openDebug": "neverOpen",
+	"python.linting.enabled": false,
+	"python.testing.unittestArgs": [
+		"-v",
+		"-s",
+		"./Model",
+		"-p",
+		"*_test.py"
+	],
+	"python.testing.pytestEnabled": false,
+	"python.testing.nosetestsEnabled": false,
+	"python.testing.unittestEnabled": true,
+	"python.pythonPath": "C:\\Program Files (x86)\\Python38-32\\python.exe"
+}
