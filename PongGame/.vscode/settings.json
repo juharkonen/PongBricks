@@ -2,7 +2,7 @@
 {
 	"files.eol": "\n",
 	"debug.openDebug": "neverOpen",
-	"python.linting.enabled": false,
+	"python.linting.enabled": true,
 	"python.testing.unittestArgs": [
 		"-v",
 		"-s",
@@ -13,5 +13,6 @@
 	"python.testing.pytestEnabled": false,
 	"python.testing.nosetestsEnabled": false,
 	"python.testing.unittestEnabled": true,
-	"python.pythonPath": "C:\\Program Files (x86)\\Python38-32\\python.exe"
+	"python.pythonPath": "C:\\Program Files (x86)\\Python38-32\\python.exe",
+	"python.linting.pylintEnabled": true
 }
