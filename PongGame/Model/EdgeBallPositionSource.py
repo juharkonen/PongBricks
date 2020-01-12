@@ -1,4 +1,5 @@
 #from enum import Enum
+from Model.ScreenGeometry import *
 from Model.ScreenCalculator import ScreenCalculator
 """
 class MoveState(Enum):
@@ -11,8 +12,6 @@ class MoveState(Enum):
 TIME_PER_EDGE = 5
 TIME_PERIOD = 4 * TIME_PER_EDGE # seconds
 HALF_TIME_PERIOD = TIME_PERIOD / 2.0
-SCREEN_WIDTH = 22.0
-SCREEN_HEIGHT = 12.0
 SPEED = 2.0 * (SCREEN_HEIGHT + SCREEN_WIDTH) / TIME_PERIOD # units/second
 HEIGHT_DURATION = SCREEN_HEIGHT / SPEED
 WIDTH_DURATION = SCREEN_WIDTH / SPEED

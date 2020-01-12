@@ -7,12 +7,11 @@ from pybricks.parameters import (Port, Stop, Direction, Button, Color,
                                  SoundFile, ImageFile, Align)
 from pybricks.tools import print, wait, StopWatch
 from pybricks.robotics import DriveBase
-from Model.ScreenCalculator import (ScreenCalculator,
-                                    motor1_calibration_angle_degrees,
-                                    motor2_calibration_angle_degrees)
+from Model.ScreenCalculator import ScreenCalculator
 from Model.EdgeBallPositionSource import EdgeBallPositionSource
 import math
 from Model.ScreenCalculator import ScreenCalculator
+from Model.ScreenGeometry import *
 
 class ButtonHandler:
     def __init__(self, action, touchSensor):
@@ -38,10 +37,12 @@ class TouchSensorManager:
 class GameState:
     motor1Speed = 0
     touchSensors = TouchSensorManager()
-    dutyLimit = 30# 50
+    dutyLimit = 35# 50
     
     motor1 = Motor(Port.A)
     motor2 = Motor(Port.B)
+    x = 10.5
+    y = 10.0
 
     def Start(self):
         # set up callbacks
@@ -76,10 +77,12 @@ class GameState:
         wait(300)
 
         # Back off a bit
-        reverse_offset = 5
+        """
+        reverse_offset = -5
         print("Backing off " + str(reverse_offset) + " degrees")
         self.motor1.run_angle(50, reverse_offset, Stop.COAST, False)
         self.motor2.run_angle(50, reverse_offset, Stop.COAST, True)
+        """
 
         wait(300)
 
@@ -132,12 +135,12 @@ class GameState:
 
             #x = 11
             #y = 10
-            #motor1_ref_angle, motor2_ref_angle = ScreenCalculator.get_motor_angles(x, y)
+            motor1_ref_angle, motor2_ref_angle = ScreenCalculator.get_motor_angles(self.x, self.y)
 
-            motor1_ref_angle, motor2_ref_angle = positionSource.get_ball_motor_angles(deltaTime)
-            x, y = positionSource.get_screen_position(0)
-            motor1_angle = motor1_calibration_angle_degrees - motor1_ref_angle
-            motor2_angle = motor2_calibration_angle_degrees - motor2_ref_angle
+            #motor1_ref_angle, motor2_ref_angle = positionSource.get_ball_motor_angles(deltaTime)
+            #x, y = positionSource.get_screen_position(0)
+            motor1_angle = GEAR_SIGN * GEAR_RATIO * (MOTOR1_CALIBRATION_ANGLE_DEGREES - motor1_ref_angle)
+            motor2_angle = GEAR_SIGN * GEAR_RATIO * (MOTOR2_CALIBRATION_ANGLE_DEGREES - motor2_ref_angle)
 
             self.motor1.track_target(motor1_angle)
             self.motor2.track_target(motor2_angle)
@@ -146,7 +149,7 @@ class GameState:
             if printTime > 0.5:
                 printTime -= 0.5
                 print("time " + str(time) + " deltaTime " + str(deltaTime)
-                + " x " + str(x) + " y " + str(y)
+                + " x " + str(self.x) + " y " + str(self.y)
                 + " m1 ref " + str(motor1_ref_angle) + " m2 ref " + str(motor2_ref_angle)
                 + " m1 target " + str(motor1_angle) + " actual " + str(self.motor1.angle())
                 + " m2 target " + str(motor2_angle) + " actual " + str(self.motor2.angle()))
@@ -154,7 +157,7 @@ class GameState:
             #wait(10)
 
     def run_until_stalled(self, motor):
-        motor.run(-50)
+        motor.run(-GEAR_SIGN * 150)
         previous_angle = 123.0
         watch = StopWatch()
         t_prev = watch.time() / 1000.0
@@ -168,8 +171,8 @@ class GameState:
             angle_delta = motor_angle - previous_angle
             previous_angle = motor_angle
             
-            #print("Angle " + str(motor_angle) + " Angle difference " + str(angle_delta)
-            #     + " dt " + str(dt) + " stalled_time " + str(stalled_time))
+            print("Angle " + str(motor_angle) + " Angle difference " + str(angle_delta)
+                 + " dt " + str(dt) + " stalled_time " + str(stalled_time))
             
             if  abs(angle_delta) < 1:
                 stalled_time += dt
@@ -179,30 +182,39 @@ class GameState:
             if stalled_time > 0.3:
                 break
 
+        motor.run_angle(GEAR_SIGN * 50, CALIBRATION_REVERSE_OFFSET, Stop.COAST, False)
 
 
 
     def Button1Callback(self):
         """ Test function comment """
-        self.motor1.run(50)
-        self.motor1Speed = 50;
+        self.x = 0
+        self.y = 0
+        #self.motor1.run(50)
+        #self.motor1Speed = 50;
         #self.dutyLimit = max(0, self.dutyLimit - 10)
         #print("Decrement duty limit: " + str(self.dutyLimit))
 
     def Button2Callback(self):
-        self.motor1.run(-50)
-        self.motor1Speed = -50;
+        self.x = 0
+        self.y = SCREEN_HEIGHT
+        #self.motor1.run(-50)
+        #self.motor1Speed = -50;
         #self.dutyLimit = min(100, self.dutyLimit + 10)
         #print("Inrement duty limit: " + str(self.dutyLimit))
 
     def Button3Callback(self):
-        self.motor1.set_dc_settings(self.dutyLimit, 0)
-        self.motor1.run_until_stalled(self.motor1Speed, Stop.COAST)
-        print("Run until stalled")
+        self.x = SCREEN_WIDTH
+        self.y = SCREEN_HEIGHT
+        #self.motor1.set_dc_settings(self.dutyLimit, 0)
+        #self.motor1.run_until_stalled(self.motor1Speed, Stop.COAST)
+        #print("Run until stalled")
 
     def Button4Callback(self):
-        self.motor1.stop()
-        print("Stop")
+        self.x = SCREEN_WIDTH
+        self.y = 0
+        #self.motor1.stop()
+        #print("Stop")
 
 def number_to_string(number):
     return "{:.2f}".format(number)
