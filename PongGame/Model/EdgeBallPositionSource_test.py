@@ -1,6 +1,7 @@
 from EdgeBallPositionSource import EdgeBallPositionSource, START_DURATION, TIME_PER_EDGE, SCREEN_WIDTH, SCREEN_HEIGHT
 import unittest   # The test framework
 import math
+from ScreenGeometry import *
 
 class Test_EdgeBallPositionSource(unittest.TestCase):
     positionSource = EdgeBallPositionSource()
@@ -28,7 +29,7 @@ class Test_EdgeBallPositionSource(unittest.TestCase):
         # Halfway left edge
         x, y = self.positionSource.get_screen_position(START_DURATION + 0.5 * TIME_PER_EDGE)
         self.assertAlmostEqual(x, 0, 4)
-        self.assertAlmostEqual(y, 6, 4)
+        self.assertAlmostEqual(y, SCREEN_HEIGHT / 2.0, 4)
 
         # Top left
         x, y = self.positionSource.get_screen_position(0.5 * TIME_PER_EDGE)

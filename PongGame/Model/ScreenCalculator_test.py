@@ -22,26 +22,33 @@ class Test_ScreenCalculator(unittest.TestCase):
     def test_distance(self):
         self.assertAlmostEqual(ScreenCalculator.distance(-9, 3, 2, 0), 11.40, 2)
 
+    """
     def test_calculate_angle(self):
         ScreenCalculator.get_motor_angles(11, 10)
-        self.assertAlmostEqual(ScreenCalculator.calculate_angle(
+        self.assertAlmostEqual(ScreenCalculator.calculate_motor_angle(
             SCREEN_TO_MOTOR1_OFFSET_X, SCREEN_TO_MOTOR1_OFFSET_Y, 0, 0), 4.146, 2)
-
+    """
     def test_get_motor_angles(self):
         # calculate angle at bottom left
-        motor2_x_distance = SCREEN_TO_MOTOR1_OFFSET_X - MOTOR2_X
+        motor2_x_distance = SCREEN_TO_MOTOR1_OFFSET_X - BALL_MOTOR2_X
         motor2_r3_sqr = motor2_x_distance*motor2_x_distance + SCREEN_TO_MOTOR1_OFFSET_Y*SCREEN_TO_MOTOR1_OFFSET_Y
         motor2_r3 = math.sqrt(motor2_r3_sqr)
-        d = ARM_R1*ARM_R1 + motor2_r3_sqr - ARM_R2*ARM_R2
-        n = 2 * ARM_R1 * motor2_r3
+        d = BALL_ARM_R1*BALL_ARM_R1 + motor2_r3_sqr - BALL_ARM_R2*BALL_ARM_R2
+        n = 2 * BALL_ARM_R1 * motor2_r3
         gamma = math.acos(d / n)
-        beta = math.acos((SCREEN_TO_MOTOR1_OFFSET_X - MOTOR2_X) / motor2_r3)
+        beta = math.acos((SCREEN_TO_MOTOR1_OFFSET_X - BALL_MOTOR2_X) / motor2_r3)
         alpha = beta - gamma
 
         motor1_angle, motor2_angle = ScreenCalculator.get_motor_angles(0, 0)
 
         #self.assertAlmostEqual(motor1_angle, math.degrees(4.146), 1)
         self.assertAlmostEqual(motor2_angle, math.degrees(alpha), 2)
+    
+    def test_calculate_left_paddle_angle(self):
+        angle_degrees0 = ScreenCalculator.calculate_left_paddle_angle(0)
+        angle_degrees1 = ScreenCalculator.calculate_left_paddle_angle(PADDLE_RANGE_Y)
+
+        self.assertAlmostEqual(angleDegrees, 123)
 
 if __name__ == '__main__':
     unittest.main()
