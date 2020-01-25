@@ -1,6 +1,9 @@
 from Model.ScreenGeometry import *
 import math
 
+def clamp(value, min_value, max_value):
+    return max(min(value, max_value), min_value)
+
 
 """
 screen coordinates: origin in bottom left, one unit is one stud (20 LDU)
@@ -54,8 +57,10 @@ class ScreenCalculator:
         r3 = ScreenCalculator.distance(x, y, a, b)
         denominator = r1*r1 + r3*r3 - r2*r2
         nominator = 2 * r1 * r3
-        gamma = math.acos(denominator / nominator)
-        beta = math.acos((x - a) / r3)
+        gamma_ratio = clamp(denominator / nominator, -1.0, 1.0)
+        gamma = math.acos(gamma_ratio)
+        beta_ratio = clamp((x - a) / r3, -1.0, 1.0)
+        beta = math.acos(beta_ratio)
         return beta, gamma
     
     @staticmethod

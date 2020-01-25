@@ -9,7 +9,7 @@ class MoveState(Enum):
     RIGHT = ()
     BOTTOM = ()
 """
-TIME_PER_EDGE = 5
+TIME_PER_EDGE = 2
 TIME_PERIOD = 4 * TIME_PER_EDGE # seconds
 HALF_TIME_PERIOD = TIME_PERIOD / 2.0
 SPEED = 2.0 * (SCREEN_HEIGHT + SCREEN_WIDTH) / TIME_PERIOD # units/second

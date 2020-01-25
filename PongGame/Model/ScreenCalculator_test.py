@@ -4,6 +4,9 @@ from Model.ScreenGeometry import *
 import unittest   # The test framework
 import math
 
+MOTOR1_CALIBRATION_ANGLE_DEGREES = 270.0 - math.degrees(math.asin(1/4.0))
+MOTOR2_CALIBRATION_ANGLE_DEGREES = 180 - math.degrees(math.asin(1/BALL_MOTOR2_X))
+
 class Test_ScreenCalculator(unittest.TestCase):
     calculator = ScreenCalculator()
 
@@ -22,12 +25,12 @@ class Test_ScreenCalculator(unittest.TestCase):
     def test_distance(self):
         self.assertAlmostEqual(ScreenCalculator.distance(-9, 3, 2, 0), 11.40, 2)
 
-    """
     def test_calculate_angle(self):
-        ScreenCalculator.get_motor_angles(11, 10)
-        self.assertAlmostEqual(ScreenCalculator.calculate_motor_angle(
-            SCREEN_TO_MOTOR1_OFFSET_X, SCREEN_TO_MOTOR1_OFFSET_Y, 0, 0), 4.146, 2)
-    """
+        beta, gamma = ScreenCalculator.get_motor_angles(0, 13.7984)
+
+        #self.assertAlmostEqual(ScreenCalculator.calculate_motor_angle(
+        #    SCREEN_TO_MOTOR1_OFFSET_X, SCREEN_TO_MOTOR1_OFFSET_Y, 0, 0), 4.146, 2)
+
     def test_get_motor_angles(self):
         # calculate angle at bottom left
         motor2_x_distance = SCREEN_TO_MOTOR1_OFFSET_X - BALL_MOTOR2_X
