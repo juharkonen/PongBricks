@@ -14,13 +14,22 @@ from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import *
 from MotorTracker import MotorTracker, PaddleMotorTracker
 from InputManager import InputManager
-
+from Model.PongBallCalculator import PongBallCalculator
 
 BALL_MOTOR_CALIBRATION_SPEED = 45.0
 BALL_DEBUG_MOVE_SPEED = 4.0
 
-def number_to_string(number):
+def str(number):
     return "{:.2f}".format(number)
+
+game_over_sounds = [
+    SoundFile.GAME_OVER,
+    SoundFile.CRYING,
+    SoundFile.OUCH,
+    SoundFile.KUNG_FU,
+    SoundFile.FANFARE]
+
+ball_hit_sound = SoundFile.SONAR
 
 class GameState:
     input_manager = InputManager()
@@ -29,9 +38,18 @@ class GameState:
     is_calibrating = True
     exit_game = False
 
+    def play_sound(self, sound):
+        print("playing " + sound)
+        brick.sound.file(sound)
+        wait(300)
 
     def Start(self):
         
+        #self.play_sound(game_over_sounds[0])
+        #self.play_sound(ball_hit_sound)
+        # Audio must be mono. 8bit unsigned and 16bit signed confirmed to play
+        ##brick.sound.file('Audio/dundundunnn_16bit.wav')
+
         # Offset paddle motor angles to y = 0 (bottom)
         paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(0)
         paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(0)
@@ -54,7 +72,7 @@ class GameState:
         self.ball_left_motor = MotorTracker(Port.A, BALL_MOTOR_CALIBRATION_SPEED, 0)
         self.ball_right_motor = MotorTracker(Port.B, BALL_MOTOR_CALIBRATION_SPEED, 0)
         
-        print("Starting ball calibration")
+        print("Ball calibration: press CENTER complete")
         self.input_manager.add_brick_button_handler(Button.LEFT, self.left_ball_motor_up)
         self.input_manager.add_brick_button_handler(Button.RIGHT, self.left_ball_motor_down)
         self.input_manager.add_brick_button_handler(Button.UP, self.right_ball_motor_up)
@@ -101,13 +119,21 @@ class GameState:
         self.input_manager.add_brick_button_handler(Button.UP, self.ball_y_up)
         self.input_manager.add_brick_button_handler(Button.DOWN, self.ball_y_down)
 
-        self.x = SCREEN_WIDTH / 2.0
-        self.y = SCREEN_HEIGHT
+        #self.x = SCREEN_WIDTH / 2.0
+        #self.y = SCREEN_HEIGHT
         self.print_time = 0
+
+        
+        self.pong = PongBallCalculator()
+        rand = (self.watch.time() % 0.45) / 0.45
+        self.pong.reset_random(rand)
+
         self.iterate(lambda: not self.exit_game, self.update_game)
 
         # return to start position
         print("returning ball to calibration position")
+
+
         self.x = SCREEN_WIDTH / 2.0
         self.y = SCREEN_HEIGHT
         self.update_ball_position()
@@ -116,7 +142,10 @@ class GameState:
 
     def update_game(self, delta_time):
         # Update target angles for ball x and y
-        self.x, self.y = self.positionSource.get_screen_position(delta_time)
+        self.pong.update_state(delta_time)
+        self.x = self.pong.x
+        self.y = self.pong.y
+        #self.x, self.y = self.positionSource.get_screen_position(delta_time)
         
         self.update_ball_position()
 
@@ -128,14 +157,16 @@ class GameState:
         self.paddle_right_motor.track_target(paddle_right_angle)
 
         self.print_time += delta_time
+        """
         if self.print_time > 1.0:
-            self.print_time -= 1000
+            self.print_time -= 1
             print("time " + str(self.time)
              + " delta_time " + str(delta_time)
              + " x " + str(self.x)
              + " y " + str(self.y)
              + " paddle_left_angle " + str(paddle_left_angle)
              + " paddle_right_angle " + str(paddle_right_angle))
+        """
 
     def update_ball_position(self):
         print("x y " + str(self.x) + "   " + str(self.y))

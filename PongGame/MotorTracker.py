@@ -6,7 +6,7 @@ from pybricks.parameters import Stop
 
 PADDLE_CALIBRATION_DUTY_LIMIT = 30.0
 PADDLE_CALIBRATION_REVERSE_OFFSET = 8.0
-STALL_DURATION = 0.2
+STALL_DURATION = 0.3
 
 class MotorTracker:
     def __init__(self, port, scale, offset):
