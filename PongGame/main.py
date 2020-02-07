@@ -6,7 +6,6 @@ from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
 from pybricks.parameters import (Port, Stop, Direction, Button, Color,
                                  SoundFile, ImageFile, Align)
 from pybricks.tools import print, wait, StopWatch
-from pybricks.robotics import DriveBase
 from Model.ScreenCalculator import ScreenCalculator
 from Model.EdgeBallPositionSource import EdgeBallPositionSource
 import math
@@ -15,6 +14,8 @@ from Model.ScreenGeometry import *
 from MotorTracker import MotorTracker, PaddleMotorTracker
 from InputManager import InputManager
 from Model.PongBallCalculator import PongBallCalculator
+from States.StallPaddleState import StallPaddleState
+from States.AndState import AndState
 
 BALL_MOTOR_CALIBRATION_SPEED = 45.0
 BALL_DEBUG_MOVE_SPEED = 4.0
@@ -43,8 +44,28 @@ class GameState:
         brick.sound.file(sound)
         wait(300)
 
-    def Start(self):
+    def run_state(self, state):
+        # TODO use instance.__class__.__name__ if type() doesn't work
+        print("entering state " + type(state.next_state).__name__)
+        state.on_enter()
+        self.watch.reset()
+        previous_time = 0.0
+        time = 0.0
+        running = True
+        while running:
+            time = self.watch.time() / 1000.0
+            delta_time = time - previous_time
+            previous_time = time
+            running = state.update(time, delta_time)
+
+        state.on_exit()
+
+        if state.next_state != None:
+            self.run_state(state.next_state)
+
+    def run(self):
         
+
         #self.play_sound(game_over_sounds[0])
         #self.play_sound(ball_hit_sound)
         # Audio must be mono. 8bit unsigned and 16bit signed confirmed to play
@@ -55,7 +76,20 @@ class GameState:
         paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(0)
         self.paddle_left_motor = PaddleMotorTracker(Port.C, PADDLE_GEAR_RATIO, paddle_left_offset, 1)
         self.paddle_right_motor = PaddleMotorTracker(Port.D, PADDLE_GEAR_RATIO, paddle_right_offset, -1)
-        
+
+        stall_left_state = StallPaddleState(self.paddle_left_motor.motor, 1)
+        stall_right_state = StallPaddleState(self.paddle_right_motor.motor, -1)
+
+        stall_state = AndState([stall_left_state, stall_right_state])
+        stall_state.next_state = None
+
+        self.run_state(stall_state)
+        print("paddles stalled")
+
+        return
+
+
+        """
         print("Calibrate left paddle")
         self.paddle_left_motor.run_until_stalled()
         #self.run_until_stalled(self.motor_paddle_left, 1)
@@ -65,6 +99,7 @@ class GameState:
         self.paddle_right_motor.run_until_stalled()
         #self.run_until_stalled(self.motor_paddle_right, -1)
         print("right paddle stalled")
+        """
         self.paddle_left_target_y = 0.0
         self.paddle_right_target_y = 0.0
 
@@ -251,4 +286,4 @@ class GameState:
 
 
 game = GameState()
-game.Start()
+game.run()
