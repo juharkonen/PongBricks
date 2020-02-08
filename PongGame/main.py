@@ -14,8 +14,10 @@ from Model.ScreenGeometry import *
 from MotorTracker import MotorTracker, PaddleMotorTracker
 from InputManager import InputManager
 from Model.PongBallCalculator import PongBallCalculator
+from StateRunner import StateRunner
 from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
+from States.BallCalibrationState import BallCalibrationState
 
 BALL_MOTOR_CALIBRATION_SPEED = 45.0
 BALL_DEBUG_MOVE_SPEED = 4.0
@@ -34,43 +36,31 @@ ball_hit_sound = SoundFile.SONAR
 
 class GameState:
     input_manager = InputManager()
-    watch = StopWatch()
-    
+    runner = StateRunner()
     is_calibrating = True
     exit_game = False
+    next_state = None
 
     def play_sound(self, sound):
         print("playing " + sound)
         brick.sound.file(sound)
         wait(300)
 
-    def run_state(self, state):
-        # TODO use instance.__class__.__name__ if type() doesn't work
-        print("entering state " + type(state.next_state).__name__)
-        state.on_enter()
-        self.watch.reset()
-        previous_time = 0.0
-        time = 0.0
-        running = True
-        while running:
-            time = self.watch.time() / 1000.0
-            delta_time = time - previous_time
-            previous_time = time
-            running = state.update(time, delta_time)
+    def on_exit(self):
+        pass
 
-        state.on_exit()
+    def on_update(self, time, delta_time):
+        #print("GameState.on_update " + str(time))
+        self.input_manager.Update(delta_time)
+        return self.runner.update_state()
 
-        if state.next_state != None:
-            self.run_state(state.next_state)
-
-    def run(self):
-        
-
+    def on_enter(self):
         #self.play_sound(game_over_sounds[0])
         #self.play_sound(ball_hit_sound)
         # Audio must be mono. 8bit unsigned and 16bit signed confirmed to play
         ##brick.sound.file('Audio/dundundunnn_16bit.wav')
 
+        # Setup stall paddles
         # Offset paddle motor angles to y = 0 (bottom)
         paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(0)
         paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(0)
@@ -81,48 +71,19 @@ class GameState:
         stall_right_state = StallPaddleState(self.paddle_right_motor.motor, -1)
 
         stall_state = AndState([stall_left_state, stall_right_state])
-        stall_state.next_state = None
-
-        self.run_state(stall_state)
-        print("paddles stalled")
-
-        return
-
-
-        """
-        print("Calibrate left paddle")
-        self.paddle_left_motor.run_until_stalled()
-        #self.run_until_stalled(self.motor_paddle_left, 1)
-        print("left paddle stalled")
-
-        print("Calibrate right paddle")
-        self.paddle_right_motor.run_until_stalled()
-        #self.run_until_stalled(self.motor_paddle_right, -1)
-        print("right paddle stalled")
-        """
-        self.paddle_left_target_y = 0.0
-        self.paddle_right_target_y = 0.0
 
         # Create ball motors
-        self.ball_left_motor = MotorTracker(Port.A, BALL_MOTOR_CALIBRATION_SPEED, 0)
-        self.ball_right_motor = MotorTracker(Port.B, BALL_MOTOR_CALIBRATION_SPEED, 0)
-        
-        print("Ball calibration: press CENTER complete")
-        self.input_manager.add_brick_button_handler(Button.LEFT, self.left_ball_motor_up)
-        self.input_manager.add_brick_button_handler(Button.RIGHT, self.left_ball_motor_down)
-        self.input_manager.add_brick_button_handler(Button.UP, self.right_ball_motor_up)
-        self.input_manager.add_brick_button_handler(Button.DOWN, self.right_ball_motor_down)
+        ball_left_motor = MotorTracker(Port.A, BALL_MOTOR_CALIBRATION_SPEED, 0)
+        ball_right_motor = MotorTracker(Port.B, BALL_MOTOR_CALIBRATION_SPEED, 0)
+        ball_calibration_state = BallCalibrationState(self.input_manager, ball_left_motor, ball_right_motor)
 
-        # Run motor controls until player stops calibration with CENTER button
-        self.input_manager.add_brick_button_handler(Button.CENTER, self.stop_ball_calibration)
-        self.is_calibrating = True
-        self.iterate(lambda:self.is_calibrating, None)
 
-        self.ball_left_motor.reset_angle()
-        self.ball_right_motor.reset_angle()
+        self.runner.append_state(stall_state)
+        self.runner.append_state(ball_calibration_state)
+        self.runner.setup_first_state()
 
-        self.input_manager.clear_handlers()
-        print("Finished ball calibration")
+
+        return
 
         wait(500)
 
@@ -175,6 +136,10 @@ class GameState:
 
         wait(500)
 
+
+
+
+
     def update_game(self, delta_time):
         # Update target angles for ball x and y
         self.pong.update_state(delta_time)
@@ -209,25 +174,7 @@ class GameState:
         self.ball_left_motor.track_target(ball_left_motor_angle)
         self.ball_right_motor.track_target(ball_right_motor_angle)
 
-    def left_ball_motor_up(self, delta_time):
-        self.ball_left_motor.track_target_step(delta_time)
-        print("ball_left_motor target " + str(self.ball_left_motor.target))
 
-    def left_ball_motor_down(self, delta_time):
-        self.ball_left_motor.track_target_step(-delta_time)
-        print("ball_left_motor target " + str(self.ball_left_motor.target))
-
-    def right_ball_motor_up(self, delta_time):
-        self.ball_right_motor.track_target_step(delta_time)
-        print("ball_right_motor target " + str(self.ball_right_motor.target))
-
-    def right_ball_motor_down(self, delta_time):
-        self.ball_right_motor.track_target_step(-delta_time)
-        print("ball_right_motor target " + str(self.ball_right_motor.target))
-
-    def stop_ball_calibration(self, _):
-        self.is_calibrating = False
-        print("finish ball calibration")
 
     def ball_x_right(self, delta_time):
         self.x = clamp(self.x + BALL_DEBUG_MOVE_SPEED * delta_time, 0, SCREEN_WIDTH)
@@ -285,5 +232,6 @@ class GameState:
         print("right target " + str(self.paddle_right_target_y))
 
 
+runner = StateRunner()
 game = GameState()
-game.run()
+runner.run_state(game)

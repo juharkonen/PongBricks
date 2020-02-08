@@ -10,12 +10,12 @@ class AndState:
     def on_exit(self):
         pass
 
-    def update(self, time, delta_time):
+    def on_update(self, time, delta_time):
         for state in self.states:
             if state in self.completed_states:
                 continue
 
-            if not state.update(time, delta_time):
+            if not state.on_update(time, delta_time):
                 state.on_exit()
                 self.completed_states.append(state)
         

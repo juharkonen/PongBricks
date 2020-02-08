@@ -1,4 +1,4 @@
-from pybricks.tools import print, StopWatch
+from pybricks.tools import print
 from pybricks.parameters import Stop
 
 STALL_DURATION = 0.3
@@ -22,8 +22,9 @@ class StallPaddleState:
     def on_exit(self):
         self.motor.set_dc_settings(100, 0)
         self.motor.run_angle(-self.stall_sign * 50, PADDLE_CALIBRATION_REVERSE_OFFSET, Stop.COAST, True)
+        print("paddle stalled")
 
-    def update(self, time, delta_time):
+    def on_update(self, time, delta_time):
         motor_angle = self.motor.angle()
         angle_delta = motor_angle - self.previous_angle
         self.previous_angle = motor_angle
