@@ -1,5 +1,5 @@
 #!/usr/bin/env pybricks-micropython
-
+from States.State import State
 from pybricks import ev3brick as brick
 from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
                                  InfraredSensor, UltrasonicSensor, GyroSensor)
@@ -18,6 +18,8 @@ from StateRunner import StateRunner
 from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
 from States.BallCalibrationState import BallCalibrationState
+from States.GameModeMenuState import GameModeMenuState
+from States.PvPGameState import PvPGameState
 
 BALL_MOTOR_CALIBRATION_SPEED = 45.0
 BALL_DEBUG_MOVE_SPEED = 4.0
@@ -34,7 +36,7 @@ game_over_sounds = [
 
 ball_hit_sound = SoundFile.SONAR
 
-class GameState:
+class GameState(State):
     input_manager = InputManager()
     runner = StateRunner()
     is_calibrating = True
@@ -45,9 +47,6 @@ class GameState:
         print("playing " + sound)
         brick.sound.file(sound)
         wait(300)
-
-    def on_exit(self):
-        pass
 
     def on_update(self, time, delta_time):
         #print("GameState.on_update " + str(time))
@@ -72,14 +71,25 @@ class GameState:
 
         stall_state = AndState([stall_left_state, stall_right_state])
 
-        # Create ball motors
+        # Setup ball calibration
         ball_left_motor = MotorTracker(Port.A, BALL_MOTOR_CALIBRATION_SPEED, 0)
         ball_right_motor = MotorTracker(Port.B, BALL_MOTOR_CALIBRATION_SPEED, 0)
         ball_calibration_state = BallCalibrationState(self.input_manager, ball_left_motor, ball_right_motor)
 
+        # Setup game modes
+        pvp_state = PvPGameState(self.input_manager)
 
+
+        # Setup game mode seletion
+        menu_state = GameModeMenuState(self.input_manager, pvp_state, pvp_state, pvp_state)
+
+
+
+        # Setup state runner
         self.runner.append_state(stall_state)
         self.runner.append_state(ball_calibration_state)
+        self.runner.append_state(menu_state)
+
         self.runner.setup_first_state()
 
 

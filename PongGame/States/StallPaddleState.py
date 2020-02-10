@@ -1,3 +1,4 @@
+from States.State import State
 from pybricks.tools import print
 from pybricks.parameters import Stop
 
@@ -5,7 +6,7 @@ STALL_DURATION = 0.3
 PADDLE_CALIBRATION_DUTY_LIMIT = 30.0
 PADDLE_CALIBRATION_REVERSE_OFFSET = 8.0
 
-class StallPaddleState:
+class StallPaddleState(State):
     def __init__(self, motor, stall_sign):
         self.motor = motor
         self.stall_sign = stall_sign

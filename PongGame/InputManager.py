@@ -10,20 +10,29 @@ class TouchSensorHandler:
         if self.touch_sensor.pressed():
             self.action(delta_tme)
 
-class BrickButtonHandler:
-    def __init__(self, button, action):
+class BrickButtonPressHandler:
+    def __init__(self, button, action, track_state_change):
         self.button = button
         self.action = action
+        self.track_state_change = track_state_change
+        self.previous_buttons = brick.buttons()
 
     def Update(self, delta_tme):
-        if self.button in brick.buttons():
-            self.action(delta_tme)        
+        current_buttons = brick.buttons()
+        if self.track_state_change:
+            if self.button in current_buttons and not self.button in self.previous_buttons:
+                self.action(delta_tme)        
+            self.previous_buttons = current_buttons
+            pass
+        else:
+            if self.button in current_buttons:
+                self.action(delta_tme)        
 
 class InputManager:
     handlers = []
 
-    def add_brick_button_handler(self, button, action):
-        handler = BrickButtonHandler(button, action)
+    def add_brick_button_handler(self, button, action, track_state_change = True):
+        handler = BrickButtonPressHandler(button, action, track_state_change)
         self.handlers.append(handler)
 
     def add_touch_sensor_handler(self, port, action):

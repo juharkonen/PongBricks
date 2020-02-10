@@ -1,27 +1,36 @@
+from States.State import State
+from pybricks import ev3brick as brick
 from pybricks.tools import print
 from Model.ScreenCalculator import ScreenCalculator
-from pybricks.parameters import (Button)
+from pybricks.parameters import Button
 CALIBRATION_DUTY_LIMIT = 40.0
 
-class BallCalibrationState:
+class BallCalibrationState(State):
     def __init__(self, input_manager, left_motor, right_motor):
         self.input_manager = input_manager
         self.left_motor = left_motor
         self.right_motor = right_motor
 
     def on_enter(self):
-        self.input_manager.add_brick_button_handler(Button.LEFT, self.left_motor_up)
-        self.input_manager.add_brick_button_handler(Button.RIGHT, self.left_motor_down)
-        self.input_manager.add_brick_button_handler(Button.UP, self.right_motor_up)
-        self.input_manager.add_brick_button_handler(Button.DOWN, self.right_motor_down)
+        self.input_manager.add_brick_button_handler(Button.LEFT, self.left_motor_up, False)
+        self.input_manager.add_brick_button_handler(Button.RIGHT, self.left_motor_down, False)
+        self.input_manager.add_brick_button_handler(Button.UP, self.right_motor_up, False)
+        self.input_manager.add_brick_button_handler(Button.DOWN, self.right_motor_down, False)
 
         self.input_manager.add_brick_button_handler(Button.CENTER, self.stop_calibration)
 
-        self.is_calibrating = True
+        self.is_running = True
+
+        brick.display.clear()
+        brick.display.text("ARROWS", (60, 50))
+        brick.display.text("move ball")
+        brick.display.text("CENTER")
+        brick.display.text("ready")
+
         print("Ball calibration: press CENTER complete")
 
     def on_update(self, time, delta_time):
-        return self.is_calibrating
+        return self.is_running
 
     def on_exit(self):
         self.left_motor.reset_angle()
@@ -47,5 +56,5 @@ class BallCalibrationState:
         print("right_motor target " + str(self.right_motor.target))
 
     def stop_calibration(self, _):
-        self.is_calibrating = False
+        self.is_running = False
 

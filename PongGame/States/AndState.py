@@ -1,4 +1,6 @@
-class AndState:
+from States.State import State
+
+class AndState(State):
     def __init__(self, states):
         self.states = states
         self.completed_states = []
@@ -6,9 +8,6 @@ class AndState:
     def on_enter(self):
         for state in self.states:
             state.on_enter()
-
-    def on_exit(self):
-        pass
 
     def on_update(self, time, delta_time):
         for state in self.states:
