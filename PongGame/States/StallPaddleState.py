@@ -4,7 +4,7 @@ from pybricks.parameters import Stop
 
 STALL_DURATION = 0.3
 PADDLE_CALIBRATION_DUTY_LIMIT = 30.0
-PADDLE_CALIBRATION_REVERSE_OFFSET = 8.0
+PADDLE_CALIBRATION_REVERSE_OFFSET = 16.0
 
 class StallPaddleState(State):
     def __init__(self, motor, stall_sign):
@@ -14,7 +14,6 @@ class StallPaddleState(State):
     def on_enter(self):
 
         self.motor.set_dc_settings(PADDLE_CALIBRATION_DUTY_LIMIT, 0)
-        self.motor.reset_angle(0)
         self.motor.run(self.stall_sign * 150)
 
         self.previous_angle = 0.0
@@ -23,6 +22,7 @@ class StallPaddleState(State):
     def on_exit(self):
         self.motor.set_dc_settings(100, 0)
         self.motor.run_angle(-self.stall_sign * 50, PADDLE_CALIBRATION_REVERSE_OFFSET, Stop.COAST, True)
+        self.motor.reset_angle(0)
         print("paddle stalled")
 
     def on_update(self, time, delta_time):
