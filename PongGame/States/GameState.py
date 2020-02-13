@@ -3,6 +3,9 @@ from Model.ScreenGeometry import PADDLE_RANGE_Y
 from States.State import State
 from pybricks.tools import print
 
+def str(number):
+    return "{:.2f}".format(number)
+
 class GameState(State):
     def set_motors(self, paddle_left_motor, paddle_right_motor, ball_left_motor, ball_right_motor):
         self.paddle_left_motor = paddle_left_motor

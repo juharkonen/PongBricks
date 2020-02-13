@@ -1,20 +1,13 @@
 #!/usr/bin/env pybricks-micropython
-from States.State import State
-from pybricks import ev3brick as brick
-from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
-                                 InfraredSensor, UltrasonicSensor, GyroSensor)
-from pybricks.parameters import (Port, Stop, Direction, Button, Color,
+from pybricks.parameters import (Port, Stop, Direction, Color,
                                  SoundFile, ImageFile, Align)
-from pybricks.tools import print, wait, StopWatch
-from Model.ScreenCalculator import ScreenCalculator
-from Model.EdgeBallPositionSource import EdgeBallPositionSource
-import math
+from pybricks.tools import print, wait
 from Model.ScreenCalculator import ScreenCalculator, clamp
-from Model.ScreenGeometry import *
+from Model.ScreenGeometry import PADDLE_GEAR_RATIO
 from MotorTracker import MotorTracker, PaddleMotorTracker
 from InputManager import InputManager
-from Model.PongBallCalculator import PongBallCalculator
 from StateRunner import StateRunner
+from States.State import State
 from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
 from States.BallCalibrationState import BallCalibrationState
@@ -22,31 +15,13 @@ from States.GameModeMenuState import GameModeMenuState
 from States.PvPGameState import PvPGameState
 
 BALL_MOTOR_CALIBRATION_SPEED = 45.0
-BALL_DEBUG_MOVE_SPEED = 4.0
 
-def str(number):
-    return "{:.2f}".format(number)
-
-game_over_sounds = [
-    SoundFile.GAME_OVER,
-    SoundFile.CRYING,
-    SoundFile.OUCH,
-    SoundFile.KUNG_FU,
-    SoundFile.FANFARE]
-
-ball_hit_sound = SoundFile.SONAR
-
-class GameState(State):
+class MainState(State):
     input_manager = InputManager()
     runner = StateRunner()
     is_calibrating = True
     exit_game = False
     next_state = None
-
-    def play_sound(self, sound):
-        print("playing " + sound)
-        brick.sound.file(sound)
-        wait(300)
 
     def on_update(self, time, delta_time):
         #print("GameState.on_update " + str(time))
@@ -64,11 +39,6 @@ class GameState(State):
         game_state.set_motors(self.paddle_left_motor, self.paddle_right_motor, self.ball_left_motor, self.ball_right_motor)
 
     def on_enter(self):
-        #self.play_sound(game_over_sounds[0])
-        #self.play_sound(ball_hit_sound)
-        # Audio must be mono. 8bit unsigned and 16bit signed confirmed to play
-        ##brick.sound.file('Audio/dundundunnn_16bit.wav')
-
         self.setup_motors()
 
         # Setup stall paddles
@@ -98,5 +68,5 @@ class GameState(State):
 
 
 runner = StateRunner()
-game = GameState()
+game = MainState()
 runner.run_state(game)
