@@ -6,27 +6,24 @@ from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import PADDLE_GEAR_RATIO
 from MotorTracker import MotorTracker, PaddleMotorTracker
 from InputManager import InputManager
-from StateRunner import StateRunner
-from States.State import State
+from States.StateRunner import StateRunner
 from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
 from States.BallCalibrationState import BallCalibrationState
 from States.GameModeMenuState import GameModeMenuState
 from States.PvPGameState import PvPGameState
+from States.ExitState import ExitState
+from States.NestedState import NestedState
 
 BALL_MOTOR_CALIBRATION_SPEED = 45.0
 
-class MainState(State):
+class MainState(NestedState):
     input_manager = InputManager()
-    runner = StateRunner()
-    is_calibrating = True
-    exit_game = False
     next_state = None
 
     def on_update(self, time, delta_time):
-        #print("GameState.on_update " + str(time))
         self.input_manager.Update(delta_time)
-        return self.runner.update_state()
+        return super().on_update(time, delta_time)
 
     def setup_motors(self):
         # Offset paddle motor angles to y = 0 (bottom)
@@ -55,16 +52,20 @@ class MainState(State):
         pvp_state = PvPGameState(self.input_manager)
         self.setup_game_state(pvp_state)
         # TODO
+        autoplay_state = pvp_state
+        single_player_state = pvp_state
 
         # Setup game mode selection
-        menu_state = GameModeMenuState(self.input_manager, pvp_state, pvp_state, pvp_state)
+        exit_state = ExitState()
+        self.setup_game_state(exit_state)
+        menu_state = GameModeMenuState(self.input_manager, autoplay_state, single_player_state, pvp_state, exit_state)
 
-        # Setup state runner
-        self.runner.append_state(stall_state)
-        self.runner.append_state(ball_calibration_state)
-        self.runner.append_state(menu_state)
+        # Setup state execution
+        self.append_state(stall_state)
+        self.append_state(ball_calibration_state)
+        self.append_state(menu_state)
 
-        self.runner.setup_first_state()
+        super().on_enter()
 
 
 runner = StateRunner()

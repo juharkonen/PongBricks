@@ -4,15 +4,16 @@ from pybricks.tools import print
 from States.State import State
 
 class GameModeMenuState(State):
-    def __init__(self, input_manager, autoplay_state, single_player_state, pvp_state):
+    def __init__(self, input_manager, autoplay_state, single_player_state, pvp_state, exit_state):
         self.input_manager = input_manager
-        self.states = [autoplay_state, single_player_state, pvp_state, None]
+        self.states = [autoplay_state, single_player_state, pvp_state, exit_state]
         self.state_names = ["Autoplay", "Single Player", "PvP", "Exit"]
         self.state_index = 0
 
         autoplay_state.next_state = self
         single_player_state.next_state = self
         pvp_state.next_state = self
+        exit_state.next_state = None
 
     def on_enter(self):
         self.input_manager.add_brick_button_handler(Button.LEFT, self.select_previous)

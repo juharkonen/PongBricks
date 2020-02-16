@@ -1,20 +1,23 @@
+from pybricks.tools import print
 from Model.ScreenGeometry import *
 import math
 #from random import random
 import urandom
 
-def randint(min, max):
+INITIAL_ANGLE_RANGE_DEGREES = 45.0
+INITIAL_ANGLE_RANGE = math.radians(INITIAL_ANGLE_RANGE_DEGREES)
+BALL_SPEED = 8
+
+def rand_int(min, max):
     span = max - min + 1
     div = 0x3fffffff // span
     offset = urandom.getrandbits(30) // div
     val = min + offset
     return val
 
-def randfloat():
-    RANGE = 10000
-    return randint(0, RANGE) / (1.0 * RANGE)
-
-BALL_SPEED = 8
+def rand_float():
+    RANGE = 60000
+    return rand_int(0, RANGE) / (1.0 * RANGE)
 
 class PongBallCalculator:
     game_over = False
@@ -22,12 +25,12 @@ class PongBallCalculator:
     speed_y = 2
     speed_angle = math.pi / 4.0
 
-    def reset_random(self, unit_random):
-        angle = -math.pi + 2.0 * math.pi * unit_random
-        self.reset(angle)
+    def randomize_speed_angle(self):
+        # Limit angle to +-INITIAL_ANGLE_RANGE and either right or left side
+        side = 0.0 if rand_float() < 0.5 else 1.0
+        angle = -INITIAL_ANGLE_RANGE + 2.0 * INITIAL_ANGLE_RANGE * rand_float()
 
-    def reset(self, angle):
-        self.speed_angle = angle
+        self.speed_angle = angle + side * math.pi
         self.x = SCREEN_WIDTH / 2.0
         self.y = SCREEN_HEIGHT / 2.0
         self.speed_x = BALL_SPEED * math.cos(self.speed_angle)

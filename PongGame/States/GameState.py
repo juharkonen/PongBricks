@@ -2,6 +2,7 @@ from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import PADDLE_RANGE_Y
 from States.State import State
 from pybricks.tools import print
+from Model.ScreenGeometry import PADDLE_HALF_RANGE_Y, SCREEN_HEIGHT, SCREEN_WIDTH
 
 def str(number):
     return "{:.2f}".format(number)
@@ -20,19 +21,16 @@ class GameState(State):
 
     def set_left_paddle_target(self, y):
         angle = ScreenCalculator.calculate_left_paddle_angle(y)
-        print("set_left_paddle_target y " + str(y) + " angle " + str(angle))
+        #print("set_left_paddle_target y " + str(y) + " angle " + str(angle))
         self.paddle_left_motor.track_target(angle)
 
     def set_right_paddle_target(self, y):
         angle = ScreenCalculator.calculate_right_paddle_angle(y)
-        print("set_right_paddle_target y " + str(y) + " angle " + str(angle))
+        #print("set_right_paddle_target y " + str(y) + " angle " + str(angle))
         self.paddle_right_motor.track_target(angle)
 
-    def on_enter(self):
-        pass
+    def reset_to_initial_position(self):
+        self.set_ball_target(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0)
+        self.set_left_paddle_target(PADDLE_HALF_RANGE_Y)
+        self.set_right_paddle_target(PADDLE_HALF_RANGE_Y)
 
-    def on_exit(self):
-        pass
-
-    def on_update(self, time, delta_time):
-        return True
