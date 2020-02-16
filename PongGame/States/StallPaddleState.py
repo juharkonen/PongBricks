@@ -8,6 +8,7 @@ PADDLE_CALIBRATION_REVERSE_OFFSET = 16.0
 
 class StallPaddleState(State):
     def __init__(self, motor, stall_sign):
+        super().__init__()
         self.motor = motor
         self.stall_sign = stall_sign
 

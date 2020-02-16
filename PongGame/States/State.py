@@ -1,4 +1,9 @@
 class State:
+    def __init__(self):
+        self.next_state = None
+        # input_manager assigned from state runner before on_enter
+        self.input_manager = None
+
     def on_enter(self):
         pass
 

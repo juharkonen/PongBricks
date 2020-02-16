@@ -29,7 +29,8 @@ class BrickButtonPressHandler:
                 self.action(delta_tme)        
 
 class InputManager:
-    handlers = []
+    def __init__(self):
+        self.handlers = []
 
     def add_brick_button_handler(self, button, action, track_state_change = True):
         handler = BrickButtonPressHandler(button, action, track_state_change)
@@ -42,6 +43,6 @@ class InputManager:
     def clear_handlers(self):
         self.handlers = []
 
-    def Update(self, delta_tme):
+    def update(self, delta_tme):
         for handler in self.handlers:
             handler.Update(delta_tme)

@@ -2,6 +2,7 @@ from States.State import State
 
 class AndState(State):
     def __init__(self, states):
+        super().__init__()
         self.states = states
         self.completed_states = []
 

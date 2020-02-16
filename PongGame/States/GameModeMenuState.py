@@ -4,8 +4,8 @@ from pybricks.tools import print
 from States.State import State
 
 class GameModeMenuState(State):
-    def __init__(self, input_manager, autoplay_state, single_player_state, pvp_state, exit_state):
-        self.input_manager = input_manager
+    def __init__(self, autoplay_state, single_player_state, pvp_state, exit_state):
+        super().__init__()
         self.states = [autoplay_state, single_player_state, pvp_state, exit_state]
         self.state_names = ["Autoplay", "Single Player", "PvP", "Exit"]
         self.state_index = 0
@@ -20,10 +20,10 @@ class GameModeMenuState(State):
         self.input_manager.add_brick_button_handler(Button.RIGHT, self.select_next)
         self.input_manager.add_brick_button_handler(Button.CENTER, self.apply)
         self.update_display()
-        self.running = True
+        self.is_running = True
 
     def on_update(self, time, delta_time):
-        return self.running
+        return self.is_running
 
     def update_display(self):
         brick.display.clear()
@@ -35,7 +35,6 @@ class GameModeMenuState(State):
 
     def on_exit(self):
         self.next_state = self.states[self.state_index]
-        self.input_manager.clear_handlers()
 
     def select_previous(self, delta_time):
         self.state_index = (self.state_index - 1) % len(self.states)
@@ -48,4 +47,4 @@ class GameModeMenuState(State):
         self.update_display()
     
     def apply(self, delta_time):
-        self.running = False
+        self.is_running = False

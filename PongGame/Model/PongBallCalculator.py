@@ -20,10 +20,11 @@ def rand_float():
     return rand_int(0, RANGE) / (1.0 * RANGE)
 
 class PongBallCalculator:
-    game_over = False
-    speed_x = 1
-    speed_y = 2
-    speed_angle = math.pi / 4.0
+    def __init__(self):
+        self.game_over = False
+        self.speed_x = 1
+        self.speed_y = 2
+        self.speed_angle = math.pi / 4.0
 
     def randomize_speed_angle(self):
         # Limit angle to +-INITIAL_ANGLE_RANGE and either right or left side
