@@ -1,9 +1,9 @@
 from pybricks import ev3brick as brick
 from pybricks.parameters import Button
 from pybricks.tools import print
-from States.State import State
+from States.GameState import GameState
 
-class GameModeMenuState(State):
+class GameModeMenuState(GameState):
     def __init__(self, autoplay_state, single_player_state, pvp_state, exit_state):
         super().__init__()
         self.states = [autoplay_state, single_player_state, pvp_state, exit_state]
@@ -16,8 +16,10 @@ class GameModeMenuState(State):
         exit_state.next_state = None
 
     def on_enter(self):
-        self.input_manager.add_brick_button_handler(Button.LEFT, self.select_previous)
-        self.input_manager.add_brick_button_handler(Button.RIGHT, self.select_next)
+        self.reset_to_initial_position()
+
+        self.input_manager.add_brick_button_handler(Button.UP, self.select_previous)
+        self.input_manager.add_brick_button_handler(Button.DOWN, self.select_next)
         self.input_manager.add_brick_button_handler(Button.CENTER, self.apply)
         self.update_display()
         self.is_running = True
@@ -27,11 +29,16 @@ class GameModeMenuState(State):
 
     def update_display(self):
         brick.display.clear()
-        brick.display.text("< >", (60, 20))
-        brick.display.text("change mode")
-        brick.display.text("CENTER")
-        brick.display.text("select")
-        brick.display.text(self.state_names[self.state_index])
+        brick.display.text("MENU", (20, 20))
+        brick.display.text("")
+
+        for state_index in range(len(self.state_names)):
+            state_name = self.state_names[state_index]
+            prefix = "* " if state_index == self.state_index else "  "
+            brick.display.text(prefix + state_name)
+
+        brick.display.text("")
+        brick.display.text("CENTER = select")
 
     def on_exit(self):
         self.next_state = self.states[self.state_index]

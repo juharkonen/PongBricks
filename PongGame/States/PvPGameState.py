@@ -26,28 +26,25 @@ class PvPGameState(GameState):
         self.paddle_left_target_y = PADDLE_HALF_RANGE_Y
         self.paddle_right_target_y = PADDLE_HALF_RANGE_Y
 
-        self.pong.randomize_speed_angle()
-
-        self.reset_to_initial_position()
+        self.pong.reset()
 
         self.is_running = True
 
     def on_exit(self):
-        x = SCREEN_WIDTH / 2.0
-        y = SCREEN_HEIGHT
-        self.set_ball_target(x, y)
-
-        # TODO show result
-        self.result_state.set_winner_number(123)
+        winner_number = 2 if self.pong.left_missed else 1
+        self.result_state.set_winner_number(winner_number)
 
     def on_update(self, time, delta_time):
-        self.pong.update_state(delta_time)
-        self.set_ball_target(self.pong.x, self.pong.y)
+        self.pong.set_left_paddle_y(self.paddle_left_target_y)
+        self.pong.set_right_paddle_y(self.paddle_right_target_y)
 
+        continue_game = self.pong.update_state(delta_time)
+        
+        self.set_ball_target(self.pong.x, self.pong.y)
         self.set_left_paddle_target(self.paddle_left_target_y)
         self.set_right_paddle_target(self.paddle_right_target_y)
 
-        return self.is_running
+        return self.is_running and continue_game
 
     def on_stop(self, delta_time):
         self.is_running = False

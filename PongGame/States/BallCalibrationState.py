@@ -1,10 +1,11 @@
 from States.State import State
 from pybricks import ev3brick as brick
-from pybricks.tools import print
+from pybricks.tools import print, StopWatch
 from Model.ScreenCalculator import ScreenCalculator
 from pybricks.parameters import Button
 from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import *
+import urandom
 
 CALIBRATION_DUTY_LIMIT = 40.0
 
@@ -13,6 +14,7 @@ class BallCalibrationState(State):
         super().__init__()
         self.ball_left_motor = ball_left_motor
         self.ball_right_motor = ball_right_motor
+        self.watch = StopWatch()
 
     def on_enter(self):
         self.input_manager.add_brick_button_handler(Button.LEFT, self.left_motor_up, False)
@@ -48,6 +50,12 @@ class BallCalibrationState(State):
         self.ball_left_motor.set_transform(ball_motor_scale, ball_left_motor_start_angle)
         self.ball_right_motor.set_transform(ball_motor_scale, ball_right_motor_start_angle)
         #print("ball start angle left " + str(ball_left_motor_start_angle) + " right " + str(ball_right_motor_start_angle))
+
+        # Seed urandom
+        seed = self.watch.time()
+        urandom.seed(seed)
+        print("set urandom seed " + str(seed))
+
 
     def left_motor_up(self, delta_time):
         self.ball_left_motor.track_target_step(delta_time)

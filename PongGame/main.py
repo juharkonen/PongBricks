@@ -47,8 +47,10 @@ class MainState(NestedState):
         # Setup pvp game mode
         countdown_state = CountdownState()
         result_state = GameResultState()
+
         pvp_game_state = PvPGameState(result_state)
         self.setup_game_state(pvp_game_state)
+        
         pvp_state = NestedState()
         pvp_state.append_states(countdown_state, pvp_game_state, result_state)
 
@@ -60,6 +62,7 @@ class MainState(NestedState):
         exit_state = ExitState()
         self.setup_game_state(exit_state)
         menu_state = GameModeMenuState(autoplay_state, single_player_state, pvp_state, exit_state)
+        self.setup_game_state(menu_state)
 
         # Setup state execution
         self.append_states(stall_state, ball_calibration_state, menu_state)

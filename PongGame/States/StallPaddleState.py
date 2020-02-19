@@ -4,7 +4,7 @@ from pybricks.parameters import Stop
 
 STALL_DURATION = 0.3
 PADDLE_CALIBRATION_DUTY_LIMIT = 30.0
-PADDLE_CALIBRATION_REVERSE_OFFSET = 16.0
+PADDLE_CALIBRATION_REVERSE_OFFSET = 20.0
 
 class StallPaddleState(State):
     def __init__(self, motor, stall_sign):
