@@ -11,16 +11,16 @@ from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
 from States.BallCalibrationState import BallCalibrationState
 from States.GameModeMenuState import GameModeMenuState
-from States.PvpGameNestedState import PvpGameNestedState
 from States.ExitState import ExitState
 from States.NestedState import NestedState
 from States.PvPGameState import PvPGameState
 from States.CountdownState import CountdownState
 from States.GameResultState import GameResultState
 
-BALL_MOTOR_CALIBRATION_SPEED = 45.0
 
 class MainState(NestedState):
+    BALL_MOTOR_CALIBRATION_SPEED = 45.0
+    
     def setup_motors(self):
         # Offset paddle motor angles to y = 0 (bottom)
         paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(0)
@@ -40,8 +40,8 @@ class MainState(NestedState):
         stall_state = AndState([stall_left_state, stall_right_state])
 
         # Setup ball calibration
-        self.ball_left_motor = MotorTracker(Port.A, BALL_MOTOR_CALIBRATION_SPEED, 0)
-        self.ball_right_motor = MotorTracker(Port.B, BALL_MOTOR_CALIBRATION_SPEED, 0)
+        self.ball_left_motor = MotorTracker(Port.A, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
+        self.ball_right_motor = MotorTracker(Port.B, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
         ball_calibration_state = BallCalibrationState(self.ball_left_motor, self.ball_right_motor)
 
         # Setup pvp game mode
