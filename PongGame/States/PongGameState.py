@@ -1,3 +1,4 @@
+from pybricks.parameters import Button
 from States.GameState import GameState
 from Model.PongBallCalculator import PongBallCalculator
 from Model.ScreenGeometry import PADDLE_SPEED, PADDLE_RANGE_Y, PADDLE_HALF_RANGE_Y, SCREEN_HEIGHT, SCREEN_WIDTH
@@ -15,9 +16,31 @@ class PongGameState(GameState):
 
         self.pong.reset()
 
+        # DEBUG - exit on CENTER
+        self.input_manager.add_brick_button_handler(Button.CENTER, self.on_stop)
+
+        self.is_running = True
+
+    def on_update(self, time, delta_time):
+        # Update pong state
+        self.pong.set_left_paddle_y(self.paddle_left_target_y)
+        self.pong.set_right_paddle_y(self.paddle_right_target_y)
+        continue_game = self.pong.update_state(delta_time)
+
+        # Update graphics
+        self.set_ball_target(self.pong.x, self.pong.y)
+        self.set_left_paddle_target(self.paddle_left_target_y)
+        self.set_right_paddle_target(self.paddle_right_target_y)
+
+        return self.is_running and continue_game
+
     def on_exit(self):
-        winner_number = 2 if self.pong.left_missed else 1
-        self.result_state.set_winner_number(winner_number)
+        if self.result_state != None:
+            winner_number = 2 if self.pong.left_missed else 1
+            self.result_state.set_winner_number(winner_number)
+
+    def on_stop(self, delta_time):
+        self.is_running = False
 
     def on_left_paddle_up(self, delta_time):
         delta = PADDLE_SPEED * delta_time

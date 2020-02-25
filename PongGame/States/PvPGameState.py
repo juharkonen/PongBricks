@@ -15,28 +15,10 @@ class PvPGameState(PongGameState):
         self.input_manager.add_touch_sensor_handler(Port.S3, self.on_right_paddle_down)
         self.input_manager.add_touch_sensor_handler(Port.S4, self.on_right_paddle_up)
 
-        # DEBUG - exit on CENTER
-        self.input_manager.add_brick_button_handler(Button.CENTER, self.on_stop)
-
         self.paddle_left_target_y = PADDLE_HALF_RANGE_Y
         self.paddle_right_target_y = PADDLE_HALF_RANGE_Y
 
         self.pong.reset()
 
-        self.is_running = True
 
-    def on_update(self, time, delta_time):
-        self.pong.set_left_paddle_y(self.paddle_left_target_y)
-        self.pong.set_right_paddle_y(self.paddle_right_target_y)
-
-        continue_game = self.pong.update_state(delta_time)
-        
-        self.set_ball_target(self.pong.x, self.pong.y)
-        self.set_left_paddle_target(self.paddle_left_target_y)
-        self.set_right_paddle_target(self.paddle_right_target_y)
-
-        return self.is_running and continue_game
-
-    def on_stop(self, delta_time):
-        self.is_running = False
 
