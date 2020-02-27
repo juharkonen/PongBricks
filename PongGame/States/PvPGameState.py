@@ -15,10 +15,5 @@ class PvPGameState(PongGameState):
         self.input_manager.add_touch_sensor_handler(Port.S3, self.on_right_paddle_down)
         self.input_manager.add_touch_sensor_handler(Port.S4, self.on_right_paddle_up)
 
-        self.paddle_left_target_y = PADDLE_HALF_RANGE_Y
-        self.paddle_right_target_y = PADDLE_HALF_RANGE_Y
-
-        self.pong.reset()
-
 
 

@@ -17,6 +17,7 @@ from States.PvPGameState import PvPGameState
 from States.CountdownState import CountdownState
 from States.GameResultState import GameResultState
 from States.AutoplayGameState import AutoplayGameState
+from States.SinglePlayerGameState import SinglePlayerGameState
 
 class MainState(NestedState):
     BALL_MOTOR_CALIBRATION_SPEED = 45.0
@@ -48,7 +49,6 @@ class MainState(NestedState):
         pvp_result_state = GameResultState()
         pvp_game_state = PvPGameState(pvp_result_state)
         self.setup_game_state(pvp_game_state)
-        
         pvp_state = NestedState()
         pvp_state.append_states(CountdownState(), pvp_game_state, pvp_result_state)
 
@@ -58,8 +58,12 @@ class MainState(NestedState):
         autoplay_state = NestedState()
         autoplay_state.append_states(CountdownState(), autoplay_game_state)
 
-        # TODO implement single player game mode
-        single_player_state = pvp_state
+        # Setup single player game mode
+        single_player_result_state = GameResultState()
+        single_player_game_state = SinglePlayerGameState(single_player_result_state)
+        self.setup_game_state(single_player_game_state)
+        single_player_state = NestedState()
+        single_player_state.append_states(CountdownState(), single_player_game_state, single_player_result_state)
 
         # Setup game mode selection
         exit_state = ExitState()
