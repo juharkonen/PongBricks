@@ -6,7 +6,6 @@ import urandom
 
 INITIAL_ANGLE_RANGE_DEGREES = 60.0
 INITIAL_ANGLE_RANGE = math.radians(INITIAL_ANGLE_RANGE_DEGREES)
-BALL_SPEED = 4
 
 def rand_int(min, max):
     span = max - min + 1

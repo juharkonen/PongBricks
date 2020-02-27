@@ -4,6 +4,7 @@ from Model.ScreenCalculator import clamp
 
 class AutoplayGameState(PongGameState):
     def on_enter(self):
+        self.next_state = self.result_state
         self.reset_to_initial_position()
         self.previous_clamped_target_y = PADDLE_HALF_RANGE_Y
         super().on_enter()
@@ -21,3 +22,7 @@ class AutoplayGameState(PongGameState):
         self.paddle_right_target_y = clamped_target_y
 
         return super().on_update(time, delta_time)
+
+    def on_stop(self, delta_time):
+        self.next_state = None
+        super().on_stop(delta_time)

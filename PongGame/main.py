@@ -15,6 +15,7 @@ from States.ExitState import ExitState
 from States.NestedState import NestedState
 from States.PvPGameState import PvPGameState
 from States.CountdownState import CountdownState
+from States.AutoplayResultState import AutoplayResultState
 from States.GameResultState import GameResultState
 from States.AutoplayGameState import AutoplayGameState
 from States.SinglePlayerGameState import SinglePlayerGameState
@@ -53,10 +54,14 @@ class MainState(NestedState):
         pvp_state.append_states(CountdownState(), pvp_game_state, pvp_result_state)
 
         # Setup autoplay game mode
-        autoplay_game_state = AutoplayGameState(None)
+        autoplay_countdown_state = CountdownState()
+        autoplay_result_state = AutoplayResultState()
+        self.setup_game_state(autoplay_result_state)
+        autoplay_game_state = AutoplayGameState(autoplay_result_state)
         self.setup_game_state(autoplay_game_state)
         autoplay_state = NestedState()
-        autoplay_state.append_states(CountdownState(), autoplay_game_state)
+        autoplay_state.append_states(autoplay_countdown_state, autoplay_game_state, autoplay_result_state)
+        autoplay_result_state.next_state = autoplay_countdown_state
 
         # Setup single player game mode
         single_player_result_state = GameResultState()
@@ -70,6 +75,8 @@ class MainState(NestedState):
         self.setup_game_state(exit_state)
         menu_state = GameModeMenuState(autoplay_state, single_player_state, pvp_state, exit_state)
         self.setup_game_state(menu_state)
+
+        autoplay_game_state.set_menu_state(menu_state)
 
         # Setup state execution
         self.append_states(stall_state, ball_calibration_state, menu_state)
