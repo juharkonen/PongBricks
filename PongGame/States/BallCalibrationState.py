@@ -54,7 +54,7 @@ class BallCalibrationState(State):
         # Seed urandom
         seed = self.watch.time()
         urandom.seed(seed)
-        print("set urandom seed " + str(seed))
+        #print("set urandom seed " + str(seed))
 
 
     def left_motor_up(self, delta_time):

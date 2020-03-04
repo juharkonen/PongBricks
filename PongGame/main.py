@@ -76,8 +76,6 @@ class MainState(NestedState):
         menu_state = GameModeMenuState(autoplay_state, single_player_state, pvp_state, exit_state)
         self.setup_game_state(menu_state)
 
-        autoplay_game_state.set_menu_state(menu_state)
-
         # Setup state execution
         self.append_states(stall_state, ball_calibration_state, menu_state)
 

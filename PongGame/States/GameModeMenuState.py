@@ -45,12 +45,12 @@ class GameModeMenuState(GameState):
 
     def select_previous(self, delta_time):
         self.state_index = (self.state_index - 1) % len(self.states)
-        print("state index " + str(self.state_index))
+        #print("state index " + str(self.state_index))
         self.update_display()
     
     def select_next(self, delta_time):
         self.state_index = (self.state_index + 1) % len(self.states)
-        print("state index " + str(self.state_index))
+        #print("state index " + str(self.state_index))
         self.update_display()
     
     def apply(self, delta_time):

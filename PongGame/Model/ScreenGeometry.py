@@ -14,7 +14,9 @@ SCREEN_TO_MOTOR1_OFFSET_Y = 4.0
 BALL_GEAR_RATIO = 40.0 / 8.0
 BALL_GEAR_SIGN = 1.0
 
-BALL_SPEED = 8
+BALL_SPEED = 5
+# Increment ball speed by 10% of initial speed on hit
+BALL_SPEED_HIT_INCREMENT = 0.1 * BALL_SPEED
 
 # Paddles
 PADDLE_HEIGHT = 3.0
@@ -30,4 +32,6 @@ PADDLE_MOTOR_Y = -4.0
 PADDLE_GEAR_RATIO = 3.0
 
 PADDLE_SPEED = 4.0
-AUTOPLAY_PADDLE_SPEED = PADDLE_SPEED / 3.0
+AUTOPLAY_PADDLE_SPEED = PADDLE_SPEED / 1.5
+# How much paddle impacts ball y speed if paddle moves during hit
+PADDLE_BALL_SPEED_IMPULSE = 0.3

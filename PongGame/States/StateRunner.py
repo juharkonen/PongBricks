@@ -11,7 +11,7 @@ class StateRunner:
         self.last_state = None
         
     def append_state(self, state):
-        print("Appending state " + type(state).__name__)
+        #print("Appending state " + type(state).__name__)
         state.next_state = None
         if self.state == None:
             self.first_state = state
@@ -22,7 +22,7 @@ class StateRunner:
             self.last_state = state
 
     def setup_state(self, state):
-        print("Entering state " + type(state).__name__)
+        #print("Entering state " + type(state).__name__)
 
         self.state = state
         state.input_manager = self.input_manager
@@ -43,7 +43,7 @@ class StateRunner:
         self.input_manager.update(delta_time)
 
         if not self.state.on_update(self.time, delta_time):
-            print("Exiting state " + type(self.state).__name__)
+            #print("Exiting state " + type(self.state).__name__)
             self.state.on_exit()
             self.input_manager.clear_handlers()
             if self.state.next_state != None:

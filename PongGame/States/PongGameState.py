@@ -23,8 +23,8 @@ class PongGameState(GameState):
 
     def on_update(self, time, delta_time):
         # Update pong state
-        self.pong.set_left_paddle_y(self.paddle_left_target_y)
-        self.pong.set_right_paddle_y(self.paddle_right_target_y)
+        self.pong.set_left_paddle_y(self.paddle_left_target_y, delta_time)
+        self.pong.set_right_paddle_y(self.paddle_right_target_y, delta_time)
         continue_game = self.pong.update_state(delta_time)
 
         # Update graphics

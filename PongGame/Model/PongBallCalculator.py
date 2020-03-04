@@ -27,6 +27,11 @@ class PongBallCalculator:
         self.x = SCREEN_WIDTH / 2.0
         self.y = SCREEN_HEIGHT / 2.0
 
+        self.left_paddle_y = PADDLE_HALF_RANGE_Y
+        self.right_paddle_y = PADDLE_HALF_RANGE_Y
+        self.left_paddle_speed = 0.0
+        self.right_paddle_speed = 0.0
+
     def randomize_speed_angle(self):
         # Limit angle to +-INITIAL_ANGLE_RANGE and either right or left side
         side = 0.0 if rand_float() < 0.5 else 1.0
@@ -36,11 +41,21 @@ class PongBallCalculator:
         self.speed_x = BALL_SPEED * math.cos(speed_angle)
         self.speed_y = BALL_SPEED * math.sin(speed_angle)
 
-    def set_left_paddle_y(self, left_y):
+    def set_left_paddle_y(self, left_y, delta_time):
+        self.previous_left_paddle_y = self.left_paddle_y
         self.left_paddle_y = left_y
+        if delta_time > 0:
+            self.left_paddle_speed = (self.left_paddle_y - self.previous_left_paddle_y) / delta_time
+        else:
+            self.left_paddle_speed = 0.0
 
-    def set_right_paddle_y(self, right_y):
+    def set_right_paddle_y(self, right_y, delta_time):
+        self.previous_right_paddle_y = self.right_paddle_y
         self.right_paddle_y = right_y
+        if delta_time > 0:
+            self.right_paddle_speed = (self.right_paddle_y - self.previous_right_paddle_y) / delta_time
+        else:
+            self.right_paddle_speed = 0.0
 
     def is_paddle_hit(self, paddle_y, hit_y):
         bottom_edge = paddle_y - PADDLE_EDGE_HEIGHT
@@ -50,6 +65,11 @@ class PongBallCalculator:
     def get_hit_y(self, hit_delta_x):
         hit_delta_time = hit_delta_x / self.speed_x
         return self.y + hit_delta_time * self.speed_y
+
+    def add_ball_hit_speed_increment(self):
+        speed_angle = math.atan2(self.speed_y, self.speed_x)
+        self.speed_x += BALL_SPEED_HIT_INCREMENT * math.cos(speed_angle)
+        self.speed_y += BALL_SPEED_HIT_INCREMENT * math.sin(speed_angle)
 
     def update_state(self, delta_time):
         delta_x = delta_time * self.speed_x
@@ -68,6 +88,9 @@ class PongBallCalculator:
             remainder = advance_x - SCREEN_WIDTH
             self.x = SCREEN_WIDTH - remainder
             self.speed_x = -self.speed_x
+            self.add_ball_hit_speed_increment()
+            speed_y_hit_increment = self.right_paddle_speed * PADDLE_BALL_SPEED_IMPULSE
+            self.speed_y += speed_y_hit_increment
         elif advance_x < 0.0:
             hit_y = self.get_hit_y(self.x)
             
@@ -79,6 +102,9 @@ class PongBallCalculator:
 
             self.x = -advance_x
             self.speed_x = -self.speed_x
+            self.add_ball_hit_speed_increment()
+            speed_y_hit_increment = self.left_paddle_speed * PADDLE_BALL_SPEED_IMPULSE
+            self.speed_y += speed_y_hit_increment
         else:
             self.x = advance_x
 
