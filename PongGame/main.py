@@ -19,6 +19,7 @@ from States.AutoplayResultState import AutoplayResultState
 from States.GameResultState import GameResultState
 from States.AutoplayGameState import AutoplayGameState
 from States.SinglePlayerGameState import SinglePlayerGameState
+from States.DebugState import DebugState
 
 class MainState(NestedState):
     BALL_MOTOR_CALIBRATION_SPEED = 45.0
@@ -27,7 +28,7 @@ class MainState(NestedState):
         # Offset paddle motor angles to y = 0 (bottom)
         paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(0)
         paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(0)
-        self.paddle_left_motor = PaddleMotorTracker(Port.C, PADDLE_GEAR_RATIO, paddle_left_offset, 1)
+        self.paddle_left_motor = PaddleMotorTracker(Port.A, PADDLE_GEAR_RATIO, paddle_left_offset, 1)
         self.paddle_right_motor = PaddleMotorTracker(Port.D, PADDLE_GEAR_RATIO, paddle_right_offset, -1)
 
     def setup_game_state(self, game_state):
@@ -42,8 +43,8 @@ class MainState(NestedState):
         stall_state = AndState([stall_left_state, stall_right_state])
 
         # Setup ball calibration
-        self.ball_left_motor = MotorTracker(Port.A, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
-        self.ball_right_motor = MotorTracker(Port.B, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
+        self.ball_left_motor = MotorTracker(Port.B, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
+        self.ball_right_motor = MotorTracker(Port.C, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
         ball_calibration_state = BallCalibrationState(self.ball_left_motor, self.ball_right_motor)
 
         # Setup pvp game mode
@@ -70,6 +71,10 @@ class MainState(NestedState):
         single_player_state = NestedState()
         single_player_state.append_states(CountdownState(), single_player_game_state, single_player_result_state)
 
+        # Debug
+        debug_state = DebugState()
+        self.setup_game_state(debug_state)
+
         # Setup game mode selection
         exit_state = ExitState()
         self.setup_game_state(exit_state)
@@ -78,6 +83,7 @@ class MainState(NestedState):
 
         # Setup state execution
         self.append_states(stall_state, ball_calibration_state, menu_state)
+        #self.append_states(stall_state, ball_calibration_state, debug_state, exit_state)
 
         super().on_enter()
 
