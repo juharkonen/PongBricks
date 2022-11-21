@@ -9,8 +9,8 @@ class Test_PongBallCalculator(unittest.TestCase):
         state.update_state(0.5)
         
         sqrt_2 = math.sqrt(2)
-        x_expected = SCREEN_WIDTH / 2.0 + 0.5 * BALL_SPEED / sqrt_2
-        y_expected = SCREEN_HEIGHT / 2.0 + 0.5 * BALL_SPEED / sqrt_2
+        x_expected = SCREEN_CENTER_X + 0.5 * BALL_SPEED / sqrt_2
+        y_expected = SCREEN_CENTER_Y + 0.5 * BALL_SPEED / sqrt_2
 
         self.assertAlmostEqual(state.x, x_expected, 2)
         self.assertAlmostEqual(state.y, y_expected, 2)
@@ -22,7 +22,7 @@ class Test_PongBallCalculator(unittest.TestCase):
         delta_time = 1.5
         state.update_state(delta_time)
 
-        x_expected = SCREEN_WIDTH / 2.0 + delta_time * BALL_SPEED * math.cos(angle)
+        x_expected = SCREEN_CENTER_X + delta_time * BALL_SPEED * math.cos(angle)
         # Bounce off top edge
         y_delta = delta_time * BALL_SPEED * math.sin(angle)
         y_expected = SCREEN_HEIGHT - (y_delta - SCREEN_HEIGHT / 2)
