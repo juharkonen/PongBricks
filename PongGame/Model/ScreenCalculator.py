@@ -1,13 +1,21 @@
 from Model.ScreenGeometry import *
 import math
 
+"""
+Paddle coordinates: origin half a stud above screen bottom where the arm is attached
+"""
+
 def clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
 
+def clamp_paddle_y(target_y):
+    return clamp(target_y, 0, PADDLE_RANGE_Y)
 
 """
 screen coordinates: origin in bottom left, one unit is one stud (20 LDU)
 motor coordinates: origin on motor 1 axle
+
+Movable ball coordinates are offset from the edges by ball radius.
 """
 class ScreenCalculator:
 
@@ -28,11 +36,7 @@ class ScreenCalculator:
         r2 = PADDLE_ARM2
         r = r1 + r2
 
-        # y_max = 10.83 for PADDLE_MOTOR_Y = -4, r = 16, PADDLE_MOTOR_X = 6
-        #y_max = PADDLE_MOTOR_Y + math.sqrt(r*r - PADDLE_MOTOR_X*PADDLE_MOTOR_X)
-
         r3 = math.sqrt(PADDLE_MOTOR_X*PADDLE_MOTOR_X + delta_y*delta_y)
-        gamma = 0
         if r3 >= r:
             # outside range - reach to max height
             gamma = 0
@@ -48,7 +52,6 @@ class ScreenCalculator:
     @staticmethod
     def calculate_left_paddle_angle(y):
         return 180 - ScreenCalculator.calculate_right_paddle_angle(y)
-
 
     @staticmethod
     def calculate_motor_angle(x, y, a, b):

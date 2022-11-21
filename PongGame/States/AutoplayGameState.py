@@ -1,16 +1,17 @@
+from States.GameState import GameState
 from States.PongGameState import PongGameState
-from Model.ScreenGeometry import AUTOPLAY_PADDLE_SPEED, PADDLE_RANGE_Y, PADDLE_HALF_RANGE_Y, PADDLE_HALF_HEIGHT
-from Model.ScreenCalculator import clamp
+from Model.ScreenGeometry import AUTOPLAY_PADDLE_SPEED, PADDLE_RANGE_Y, PADDLE_CENTER_Y, PADDLE_HALF_HEIGHT
+from Model.ScreenCalculator import clamp, clamp_paddle_y
 
 class AutoplayGameState(PongGameState):
     def on_enter(self):
         self.next_state = self.result_state
         self.reset_to_initial_position()
-        self.previous_clamped_target_y = PADDLE_HALF_RANGE_Y
+        self.previous_clamped_target_y = PADDLE_CENTER_Y
         super().on_enter()
 
     def on_update(self, time, delta_time):
-        target_y = clamp(self.pong.y - PADDLE_HALF_HEIGHT, 0, PADDLE_RANGE_Y)
+        target_y = clamp_paddle_y(self.pong.y - PADDLE_HALF_HEIGHT)
         delta_y = target_y - self.previous_clamped_target_y
         max_delta_y = AUTOPLAY_PADDLE_SPEED * delta_time
 

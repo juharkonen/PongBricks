@@ -1,5 +1,6 @@
 from States.State import State
 
+# Updates states in parallel until all states have completed
 class AndState(State):
     def __init__(self, states):
         super().__init__()

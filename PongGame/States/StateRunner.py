@@ -1,6 +1,7 @@
 from pybricks.tools import print, wait, StopWatch
 from InputManager import InputManager
 
+# Runs appended states in sequene until the last one completes
 class StateRunner:
 
     def __init__(self):

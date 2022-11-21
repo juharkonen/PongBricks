@@ -1,8 +1,9 @@
 from pybricks.parameters import Button
 from States.GameState import GameState
 from Model.PongBallCalculator import PongBallCalculator
-from Model.ScreenGeometry import PADDLE_SPEED, PADDLE_RANGE_Y, PADDLE_HALF_RANGE_Y, SCREEN_HEIGHT, SCREEN_WIDTH
-from Model.ScreenCalculator import clamp
+from Model.ScreenGeometry import PADDLE_SPEED, PADDLE_CENTER_Y
+from Model.ScreenCalculator import clamp_paddle_y
+from pybricks.tools import print
 
 class PongGameState(GameState):
     def __init__(self, result_state):
@@ -11,8 +12,8 @@ class PongGameState(GameState):
         self.pong = PongBallCalculator()
 
     def on_enter(self):
-        self.paddle_left_target_y = PADDLE_HALF_RANGE_Y
-        self.paddle_right_target_y = PADDLE_HALF_RANGE_Y
+        self.paddle_left_target_y = PADDLE_CENTER_Y
+        self.paddle_right_target_y = PADDLE_CENTER_Y
 
         self.pong.reset()
 
@@ -44,28 +45,28 @@ class PongGameState(GameState):
 
     def on_left_paddle_up(self, delta_time):
         delta = PADDLE_SPEED * delta_time
-        self.paddle_left_target_y = clamp(self.paddle_left_target_y + delta, 0, PADDLE_RANGE_Y)
+        self.paddle_left_target_y = clamp_paddle_y(self.paddle_left_target_y + delta)
         #print("left target " + str(self.paddle_left_target_y))
 
         self.set_left_paddle_target(self.paddle_left_target_y)
 
     def on_left_paddle_down(self, delta_time):
         delta = -PADDLE_SPEED * delta_time
-        self.paddle_left_target_y = clamp(self.paddle_left_target_y + delta, 0, PADDLE_RANGE_Y)
+        self.paddle_left_target_y = clamp_paddle_y(self.paddle_left_target_y + delta)
         #print("left target " + str(self.paddle_left_target_y))
 
         self.set_left_paddle_target(self.paddle_left_target_y)
 
     def on_right_paddle_up(self, delta_time):
         delta = PADDLE_SPEED * delta_time
-        self.paddle_right_target_y = clamp(self.paddle_right_target_y + delta, 0, PADDLE_RANGE_Y)
+        self.paddle_right_target_y = clamp_paddle_y(self.paddle_right_target_y + delta)
         #print("right target " + str(self.paddle_right_target_y))
 
         self.set_right_paddle_target(self.paddle_right_target_y)
 
     def on_right_paddle_down(self, delta_time):
         delta = -PADDLE_SPEED * delta_time
-        self.paddle_right_target_y = clamp(self.paddle_right_target_y + delta, 0, PADDLE_RANGE_Y)
+        self.paddle_right_target_y = clamp_paddle_y(self.paddle_right_target_y + delta)
         #print("right target " + str(self.paddle_right_target_y))
 
         self.set_right_paddle_target(self.paddle_right_target_y)

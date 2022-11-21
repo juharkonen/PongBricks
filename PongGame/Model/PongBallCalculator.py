@@ -24,11 +24,11 @@ class PongBallCalculator:
         self.right_missed = False
         self.game_over = False
         self.randomize_speed_angle()
-        self.x = SCREEN_WIDTH / 2.0
-        self.y = SCREEN_HEIGHT / 2.0
+        self.x = SCREEN_CENTER_X
+        self.y = SCREEN_CENTER_Y
 
-        self.left_paddle_y = PADDLE_HALF_RANGE_Y
-        self.right_paddle_y = PADDLE_HALF_RANGE_Y
+        self.left_paddle_y = PADDLE_CENTER_Y
+        self.right_paddle_y = PADDLE_CENTER_Y
         self.left_paddle_speed = 0.0
         self.right_paddle_speed = 0.0
 
@@ -58,8 +58,11 @@ class PongBallCalculator:
             self.right_paddle_speed = 0.0
 
     def is_paddle_hit(self, paddle_y, hit_y):
-        bottom_edge = paddle_y - PADDLE_EDGE_HEIGHT
-        top_edge = bottom_edge + PADDLE_HEIGHT + 2.0 * PADDLE_EDGE_HEIGHT
+        bottom_edge = paddle_y - PADDLE_EDGE_THICKNESS
+        top_edge = bottom_edge + PADDLE_HEIGHT_WITH_THICKNESS
+
+        #print("is_paddle_hit bottom_edge " + str(bottom_edge) + ", top_edge " + str(top_edge) + ", hit_y " + str(hit_y))
+        
         return bottom_edge <= hit_y and hit_y <= top_edge
 
     def get_hit_y(self, hit_delta_x):
@@ -76,31 +79,32 @@ class PongBallCalculator:
         delta_y = delta_time * self.speed_y
         
         advance_x = self.x + delta_x
-        if advance_x > SCREEN_WIDTH:
-            hit_y = self.get_hit_y(SCREEN_WIDTH - self.x)
+        if advance_x > SCREEN_MOVABLE_RIGHT:
+            hit_y = self.get_hit_y(SCREEN_MOVABLE_RIGHT - self.x)
             
             if not self.is_paddle_hit(self.right_paddle_y, hit_y):
                 self.right_missed = True
-                self.x = SCREEN_WIDTH
+                self.x = SCREEN_MOVABLE_RIGHT
                 self.y = hit_y
                 return False
 
-            remainder = advance_x - SCREEN_WIDTH
-            self.x = SCREEN_WIDTH - remainder
+            remainder = advance_x - SCREEN_MOVABLE_RIGHT
+            self.x = SCREEN_MOVABLE_RIGHT - remainder
             self.speed_x = -self.speed_x
             self.add_ball_hit_speed_increment()
             speed_y_hit_increment = self.right_paddle_speed * PADDLE_BALL_SPEED_IMPULSE
             self.speed_y += speed_y_hit_increment
-        elif advance_x < 0.0:
-            hit_y = self.get_hit_y(self.x)
+        elif advance_x < SCREEN_MOVABLE_LEFT:
+            hit_y = self.get_hit_y(self.x - SCREEN_MOVABLE_LEFT)
             
             if not self.is_paddle_hit(self.left_paddle_y, hit_y):
                 self.left_missed = True
-                self.x = 0.0
+                self.x = SCREEN_MOVABLE_LEFT
                 self.y = hit_y
                 return False
 
-            self.x = -advance_x
+            remainder = advance_x - SCREEN_MOVABLE_LEFT
+            self.x = SCREEN_MOVABLE_LEFT - remainder
             self.speed_x = -self.speed_x
             self.add_ball_hit_speed_increment()
             speed_y_hit_increment = self.left_paddle_speed * PADDLE_BALL_SPEED_IMPULSE
@@ -109,14 +113,15 @@ class PongBallCalculator:
             self.x = advance_x
 
         advance_y = self.y + delta_y
-        if advance_y > SCREEN_HEIGHT:
+        if advance_y > SCREEN_MOVABLE_TOP:
             # Bounce from top
-            remainder = advance_y - SCREEN_HEIGHT
-            self.y = SCREEN_HEIGHT - remainder
+            remainder = advance_y - SCREEN_MOVABLE_TOP
+            self.y = SCREEN_MOVABLE_TOP - remainder
             self.speed_y = -self.speed_y
-        elif advance_y < 0.0:
+        elif advance_y < SCREEN_MOVABLE_BOTTOM:
             # Bounce from bottom
-            self.y = -advance_y
+            remainder = advance_y - SCREEN_MOVABLE_BOTTOM
+            self.y = SCREEN_MOVABLE_BOTTOM - remainder
             self.speed_y = -self.speed_y
         else:
             self.y = advance_y

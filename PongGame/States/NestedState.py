@@ -1,6 +1,7 @@
 from States.StateRunner import StateRunner
 from States.State import State
 
+# Executes appended states on an internal StateRunner
 class NestedState(State):
     def __init__(self):
         super().__init__()

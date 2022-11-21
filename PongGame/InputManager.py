@@ -21,12 +21,12 @@ class BrickButtonPressHandler:
         current_buttons = brick.buttons()
         if self.track_state_change:
             if self.button in current_buttons and not self.button in self.previous_buttons:
-                self.action(delta_tme)        
+                self.action(delta_tme)
             self.previous_buttons = current_buttons
             pass
         else:
             if self.button in current_buttons:
-                self.action(delta_tme)        
+                self.action(delta_tme)
 
 class InputManager:
     def __init__(self):

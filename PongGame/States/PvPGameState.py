@@ -1,8 +1,4 @@
-from pybricks import ev3brick as brick
-from pybricks.parameters import Button, Port
-from pybricks.tools import print
-from Model.ScreenGeometry import PADDLE_SPEED, PADDLE_RANGE_Y, PADDLE_HALF_RANGE_Y, SCREEN_HEIGHT, SCREEN_WIDTH
-from Model.PongBallCalculator import PongBallCalculator
+from pybricks.parameters import Port
 from States.PongGameState import PongGameState
 
 class PvPGameState(PongGameState):

@@ -3,9 +3,8 @@ from pybricks.parameters import (Port, Stop, Direction, Color,
                                  SoundFile, ImageFile, Align)
 from pybricks.tools import print, wait
 from Model.ScreenCalculator import ScreenCalculator, clamp
-from Model.ScreenGeometry import PADDLE_GEAR_RATIO
+from Model.ScreenGeometry import PADDLE_GEAR_RATIO, PADDLE_EDGE_THICKNESS
 from MotorTracker import MotorTracker, PaddleMotorTracker
-from InputManager import InputManager
 from States.StateRunner import StateRunner
 from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
@@ -25,9 +24,9 @@ class MainState(NestedState):
     BALL_MOTOR_CALIBRATION_SPEED = 45.0
     
     def setup_motors(self):
-        # Offset paddle motor angles to y = 0 (bottom)
-        paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(0)
-        paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(0)
+        # Offset paddle motor angles to y = PADDLE_EDGE_THICKNESS (bottom)
+        paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(PADDLE_EDGE_THICKNESS)
+        paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(PADDLE_EDGE_THICKNESS)
         self.paddle_left_motor = PaddleMotorTracker(Port.A, PADDLE_GEAR_RATIO, paddle_left_offset, 1)
         self.paddle_right_motor = PaddleMotorTracker(Port.D, PADDLE_GEAR_RATIO, paddle_right_offset, -1)
 

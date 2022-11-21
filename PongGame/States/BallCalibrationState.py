@@ -44,8 +44,8 @@ class BallCalibrationState(State):
 
         # Apply motor offset and scale for screen position calculation
         ball_motor_scale = BALL_GEAR_SIGN * BALL_GEAR_RATIO
-        ball_start_x = SCREEN_WIDTH / 2.0
-        ball_start_y = SCREEN_HEIGHT
+        ball_start_x = SCREEN_CENTER_X
+        ball_start_y = SCREEN_MOVABLE_TOP
         ball_left_motor_start_angle, ball_right_motor_start_angle = ScreenCalculator.get_motor_angles(ball_start_x, ball_start_y)
         self.ball_left_motor.set_transform(ball_motor_scale, ball_left_motor_start_angle)
         self.ball_right_motor.set_transform(ball_motor_scale, ball_right_motor_start_angle)
