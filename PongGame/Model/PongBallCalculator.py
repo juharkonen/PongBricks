@@ -58,12 +58,12 @@ class PongBallCalculator:
             self.right_paddle_speed = 0.0
 
     def is_paddle_hit(self, paddle_y, hit_y):
-        bottom_edge = paddle_y - PADDLE_EDGE_THICKNESS
+        # paddle_y and hit_y are in screen coordinates - account for offset between paddle y and screen y
+        bottom_edge = paddle_y + SCREEN_TO_PADDLE_Y_OFFSET - PADDLE_EDGE_THICKNESS
         top_edge = bottom_edge + PADDLE_HEIGHT_WITH_THICKNESS
 
-        #print("is_paddle_hit bottom_edge " + str(bottom_edge) + ", top_edge " + str(top_edge) + ", hit_y " + str(hit_y))
-        
-        return bottom_edge <= hit_y and hit_y <= top_edge
+        # Add ball radius as tolerance on both sides
+        return bottom_edge - BALL_RADIUS <= hit_y and hit_y <= top_edge + BALL_RADIUS
 
     def get_hit_y(self, hit_delta_x):
         hit_delta_time = hit_delta_x / self.speed_x

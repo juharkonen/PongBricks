@@ -1,7 +1,6 @@
 import math
 
 BALL_RADIUS = 1.0
-BALL_DIAMETER = 2.0 * BALL_RADIUS
 
 # Ball is always at least BALL_RADIUS distance from edges
 SCREEN_WIDTH = 21
@@ -19,8 +18,8 @@ BALL_ARM_R2 = 12.0
 # Ball motor 2 axle position in motor coordinates (relative to ball motor 1), aka distance between ball motors
 BALL_MOTOR2_X = 4.0
 
-SCREEN_TO_MOTOR1_OFFSET_X = -8.5# + BALL_RADIUS
-SCREEN_TO_MOTOR1_OFFSET_Y = 4.5# + BALL_RADIUS
+SCREEN_TO_MOTOR1_OFFSET_X = -8.5
+SCREEN_TO_MOTOR1_OFFSET_Y = 4.5
 
 BALL_GEAR_RATIO = 40.0 / 8.0
 BALL_GEAR_SIGN = 1.0
@@ -36,7 +35,8 @@ PADDLE_EDGE_THICKNESS = 0.5
 PADDLE_HEIGHT_WITH_THICKNESS = PADDLE_HEIGHT + 2.0 * PADDLE_EDGE_THICKNESS
 
 
-# Paddle origin is where arm is attached to the paddle
+# Paddle origin is where arm is attached to the paddle (half a stud offset from screen y)
+SCREEN_TO_PADDLE_Y_OFFSET = 0.5
 PADDLE_RANGE_Y = SCREEN_HEIGHT - PADDLE_HEIGHT_WITH_THICKNESS
 PADDLE_CENTER_Y = PADDLE_RANGE_Y / 2.0
 PADDLE_ARM1 = 6.0
