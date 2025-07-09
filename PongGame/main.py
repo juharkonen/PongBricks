@@ -4,7 +4,7 @@ from pybricks.parameters import (Port, Stop, Direction, Color,
 from pybricks.tools import print, wait
 from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import PADDLE_GEAR_RATIO, PADDLE_EDGE_THICKNESS
-from MotorTracker import MotorTracker, PaddleMotorTracker
+from MotorTracker import MotorTracker
 from States.StateRunner import StateRunner
 from States.StallPaddleState import StallPaddleState
 from States.AndState import AndState
@@ -24,11 +24,13 @@ class MainState(NestedState):
     BALL_MOTOR_CALIBRATION_SPEED = 45.0
     
     def setup_motors(self):
-        # Offset paddle motor angles to y = PADDLE_EDGE_THICKNESS (bottom)
-        paddle_left_offset = ScreenCalculator.calculate_left_paddle_angle(PADDLE_EDGE_THICKNESS)
-        paddle_right_offset = ScreenCalculator.calculate_right_paddle_angle(PADDLE_EDGE_THICKNESS)
-        self.paddle_left_motor = PaddleMotorTracker(Port.A, PADDLE_GEAR_RATIO, paddle_left_offset, 1)
-        self.paddle_right_motor = PaddleMotorTracker(Port.D, PADDLE_GEAR_RATIO, paddle_right_offset, -1)
+        self.ball_left_motor = MotorTracker(Port.B, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
+        self.ball_right_motor = MotorTracker(Port.C, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
+
+        # Offset paddle motor angles to account for paddle pivot half a stud offset at y = PADDLE_EDGE_THICKNESS
+        paddle_angle_offset = ScreenCalculator.calculate_paddle_angle(PADDLE_EDGE_THICKNESS)
+        self.paddle_left_motor = MotorTracker(Port.A, PADDLE_GEAR_RATIO, paddle_angle_offset)
+        self.paddle_right_motor = MotorTracker(Port.D, PADDLE_GEAR_RATIO, paddle_angle_offset)
 
     def setup_game_state(self, game_state):
         game_state.set_motors(self.paddle_left_motor, self.paddle_right_motor, self.ball_left_motor, self.ball_right_motor)
@@ -37,13 +39,11 @@ class MainState(NestedState):
         self.setup_motors()
 
         # Setup stall paddles
-        stall_left_state = StallPaddleState(self.paddle_left_motor.motor, 1)
-        stall_right_state = StallPaddleState(self.paddle_right_motor.motor, -1)
+        stall_left_state = StallPaddleState(self.paddle_left_motor.motor)
+        stall_right_state = StallPaddleState(self.paddle_right_motor.motor)
         stall_state = AndState([stall_left_state, stall_right_state])
 
         # Setup ball calibration
-        self.ball_left_motor = MotorTracker(Port.B, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
-        self.ball_right_motor = MotorTracker(Port.C, self.BALL_MOTOR_CALIBRATION_SPEED, 0)
         ball_calibration_state = BallCalibrationState(self.ball_left_motor, self.ball_right_motor)
 
         # Setup pvp game mode

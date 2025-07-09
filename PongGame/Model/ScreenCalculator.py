@@ -30,7 +30,7 @@ class ScreenCalculator:
         return math.sqrt(dx*dx + dy*dy)
 
     @staticmethod
-    def calculate_right_paddle_angle(y):
+    def calculate_paddle_angle(y):
         delta_y = y - PADDLE_MOTOR_Y
         r1 = PADDLE_ARM1
         r2 = PADDLE_ARM2
@@ -47,11 +47,7 @@ class ScreenCalculator:
 
         beta = math.acos(PADDLE_MOTOR_X / r3)
 
-        return -math.degrees(gamma - beta)
-
-    @staticmethod
-    def calculate_left_paddle_angle(y):
-        return 180 - ScreenCalculator.calculate_right_paddle_angle(y)
+        return math.degrees(gamma - beta)
 
     @staticmethod
     def calculate_motor_angle(x, y, a, b):

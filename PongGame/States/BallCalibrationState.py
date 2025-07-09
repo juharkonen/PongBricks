@@ -33,8 +33,6 @@ class BallCalibrationState(State):
         brick.display.text("CENTER")
         brick.display.text("ready")
 
-        #print("Ball calibration: press CENTER complete")
-
     def on_update(self, time, delta_time):
         return self.is_running
 
@@ -43,7 +41,7 @@ class BallCalibrationState(State):
         self.ball_right_motor.reset_angle()
 
         # Apply motor offset and scale for screen position calculation
-        ball_motor_scale = BALL_GEAR_SIGN * BALL_GEAR_RATIO
+        ball_motor_scale = BALL_GEAR_RATIO
         ball_start_x = SCREEN_CENTER_X
         ball_start_y = SCREEN_MOVABLE_TOP
         ball_left_motor_start_angle, ball_right_motor_start_angle = ScreenCalculator.get_motor_angles(ball_start_x, ball_start_y)
