@@ -2,7 +2,7 @@ from Model.ScreenGeometry import *
 import math
 
 """
-Paddle coordinates: origin half a stud above screen bottom where the arm is attached
+Paddle coordinates: origin at screen bottom. Paddle pivot is half a stud above bottom
 """
 
 def clamp(value, min_value, max_value):
@@ -47,7 +47,7 @@ class ScreenCalculator:
 
         beta = math.acos(PADDLE_MOTOR_X / r3)
 
-        return math.degrees(gamma - beta)
+        return -math.degrees(gamma - beta)
 
     @staticmethod
     def calculate_motor_angle(x, y, a, b):

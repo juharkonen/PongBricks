@@ -19,6 +19,7 @@ BALL_ARM_R2 = 12.0
 # Ball motor 2 axle position in motor coordinates (relative to ball motor 1), aka distance between ball motors
 BALL_MOTOR2_X = 5.0
 
+# Ball motor 1 axle pivot distance from screen bottom left
 SCREEN_TO_MOTOR1_OFFSET_X = -8.5
 SCREEN_TO_MOTOR1_OFFSET_Y = 3.5
 
@@ -40,8 +41,9 @@ PADDLE_RANGE_Y = SCREEN_HEIGHT - PADDLE_HEIGHT_WITH_THICKNESS
 PADDLE_CENTER_Y = PADDLE_RANGE_Y / 2.0
 PADDLE_ARM1 = 6.0
 PADDLE_ARM2 = 10.0
-PADDLE_MOTOR_X = 7.0
-PADDLE_MOTOR_Y = -4.0
+# Paddle motor axle distance from paddle pivot
+PADDLE_MOTOR_X = 6.0
+PADDLE_MOTOR_Y = -3.5
 PADDLE_GEARS = [12, 36]
 
 PADDLE_SPEED = 4.0

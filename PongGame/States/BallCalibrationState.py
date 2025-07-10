@@ -8,7 +8,7 @@ from Model.ScreenGeometry import *
 import urandom
 
 CALIBRATION_DUTY_LIMIT = 40.0
-BALL_MOTOR_CALIBRATION_SPEED = 45.0
+BALL_MOTOR_CALIBRATION_SPEED = 15.0
 
 class BallCalibrationState(State):
 
@@ -19,6 +19,8 @@ class BallCalibrationState(State):
         self.watch = StopWatch()
 
     def on_enter(self):
+        self.ball_left_motor.reset_angle()
+        self.ball_right_motor.reset_angle()
         self.input_manager.add_brick_button_handler(Button.LEFT, self.left_motor_up, False)
         self.input_manager.add_brick_button_handler(Button.RIGHT, self.left_motor_down, False)
         self.input_manager.add_brick_button_handler(Button.UP, self.right_motor_up, False)
@@ -29,7 +31,7 @@ class BallCalibrationState(State):
         self.is_running = True
 
         brick.display.clear()
-        brick.display.text("ARROWS", (60, 50))
+        brick.display.text("ARROWS", (30, 50))
         brick.display.text("move ball to top middle")
         brick.display.text("")
         brick.display.text("CENTER")
@@ -39,6 +41,11 @@ class BallCalibrationState(State):
         return self.is_running
 
     def on_exit(self):
+        # Ball is at top center after calibration
+        ball_left_motor_start_angle, ball_right_motor_start_angle = ScreenCalculator.get_motor_angles(SCREEN_CENTER_X, SCREEN_MOVABLE_TOP)
+        self.ball_left_motor.set_offset(ball_left_motor_start_angle)
+        self.ball_right_motor.set_offset(ball_right_motor_start_angle)
+
         self.ball_left_motor.reset_angle()
         self.ball_right_motor.reset_angle()
 

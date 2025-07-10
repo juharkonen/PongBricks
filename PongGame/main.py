@@ -2,6 +2,7 @@
 from pybricks.parameters import (Port, Stop, Direction, Color,
                                  SoundFile, ImageFile, Align)
 from pybricks.tools import print, wait
+from pybricks.ev3devices import Direction
 from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import *
 from MotorTracker import MotorTracker
@@ -20,19 +21,19 @@ from States.AutoplayGameState import AutoplayGameState
 from States.SinglePlayerGameState import SinglePlayerGameState
 from States.DebugState import DebugState
 
+PADDLE_CHANGE_DIRECTION_OFFSET = 4
+
 class MainState(NestedState):
-    BALL_MOTOR_CALIBRATION_SPEED = 45.0
-    
     def setup_motors(self):
+        self.ball_left_motor = MotorTracker(Port.B, BALL_GEARS)
+        self.ball_right_motor = MotorTracker(Port.C, BALL_GEARS)
 
-        ball_left_motor_start_angle, ball_right_motor_start_angle = ScreenCalculator.get_motor_angles(SCREEN_CENTER_X, SCREEN_MOVABLE_TOP)
-        self.ball_left_motor = MotorTracker(Port.B, BALL_GEARS, ball_left_motor_start_angle)
-        self.ball_right_motor = MotorTracker(Port.C, BALL_GEARS, ball_right_motor_start_angle)
-
+        # Paddles are at bottom after calibration
+        # Increasing angle moves paddles up
         # Offset paddle motor angles to account for paddle pivot half a stud offset at y = PADDLE_EDGE_THICKNESS
         paddle_angle_offset = ScreenCalculator.calculate_paddle_angle(PADDLE_EDGE_THICKNESS)
-        self.paddle_left_motor = MotorTracker(Port.A, PADDLE_GEARS, paddle_angle_offset)
-        self.paddle_right_motor = MotorTracker(Port.D, PADDLE_GEARS, paddle_angle_offset)
+        self.paddle_left_motor = MotorTracker(Port.A, PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
+        self.paddle_right_motor = MotorTracker(Port.D, PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
 
     def setup_game_state(self, game_state):
         game_state.set_motors(self.paddle_left_motor, self.paddle_right_motor, self.ball_left_motor, self.ball_right_motor)

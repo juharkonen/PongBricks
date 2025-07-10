@@ -9,20 +9,37 @@ PADDLE_CALIBRATION_REVERSE_OFFSET = 8.0
 STALL_DURATION = 0.3
 
 class MotorTracker:
-    def __init__(self, port, gears, angle_offset):
-        self.motor = Motor(port, Direction.CLOCKWISE, gears)
+    def __init__(self, port, gears, angle_offset = 0, direction = Direction.CLOCKWISE, change_direction_offset = 0):
+        self.motor = Motor(port, direction, gears)
         self.target_angle = 0
         self.angle_offset = angle_offset
 
-        
+        self.change_direction_offset = change_direction_offset
+        self.direction_offset = 0
+        self.previous_angle = 0
+
+    def set_offset(self, angle_offset):
+        self.angle_offset = angle_offset
 
     def track_target_step(self, step):
-        self.track_target(self.target + step)
+        self.track_target(self.target_angle + step)
 
     def track_target(self, target_angle):
         self.target_angle = target_angle
         angle = self.target_angle - self.angle_offset
-        self.motor.track_target(angle)
+        
+        if angle > self.previous_angle:
+            # Incrementing target, use zero offset
+            self.direction_offset = 0
+        elif angle < self.previous_angle:
+            # Decrementing target, use negative offset
+            self.direction_offset = -self.change_direction_offset
+        # Else keep previous offset if angle unchanged
+            
+
+        self.previous_angle = angle
+
+        self.motor.track_target(angle + self.direction_offset)
 
     def reset_angle(self):
         self.motor.reset_angle(0)
