@@ -1,6 +1,6 @@
 #!/usr/bin/env pybricks-micropython
-from pybricks.parameters import (Port, Stop, Direction, Color,
-                                 SoundFile, ImageFile, Align)
+from pybricks import ev3brick as brick
+from pybricks.parameters import Port, Stop, Direction, Color, Button
 from pybricks.tools import print, wait
 from pybricks.ev3devices import Direction
 from Model.ScreenCalculator import ScreenCalculator, clamp
@@ -24,22 +24,62 @@ from States.DebugState import DebugState
 PADDLE_CHANGE_DIRECTION_OFFSET = 4
 
 class MainState(NestedState):
+    def try_create_motor(self, port, port_text, gears, angle_offset = 0, direction = Direction.CLOCKWISE, change_direction_offset = 0):
+        try:
+            return MotorTracker(port, gears, angle_offset, direction, change_direction_offset)
+        except OSError:
+            brick.display.clear()
+            brick.display.text("ERROR:", (10, 30))
+            brick.display.text("Motor not found")
+            brick.display.text("in Port " + port_text)
+            brick.display.text("")
+            brick.display.text("CENTER")
+            brick.display.text("Exit")
+
+            self.is_error = True
+            self.is_running = True
+            self.input_manager.add_brick_button_handler(Button.CENTER, self.on_stop)
+            return None
+
     def setup_motors(self):
-        self.ball_left_motor = MotorTracker(Port.B, BALL_GEARS)
-        self.ball_right_motor = MotorTracker(Port.C, BALL_GEARS)
+        self.ball_left_motor = self.try_create_motor(Port.B, "B", BALL_GEARS)
+        if self.is_error:
+            return
+
+        self.ball_right_motor = self.try_create_motor(Port.C, "C", BALL_GEARS)
+        if self.is_error:
+            return
 
         # Paddles are at bottom after calibration
         # Increasing angle moves paddles up
         # Offset paddle motor angles to account for paddle pivot half a stud offset at y = PADDLE_EDGE_THICKNESS
         paddle_angle_offset = ScreenCalculator.calculate_paddle_angle(PADDLE_EDGE_THICKNESS)
-        self.paddle_left_motor = MotorTracker(Port.A, PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
-        self.paddle_right_motor = MotorTracker(Port.D, PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
+
+        self.paddle_left_motor = self.try_create_motor(Port.A, "A", PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
+        if self.is_error:
+            return
+
+        self.paddle_right_motor = self.try_create_motor(Port.D, "D", PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
+        if self.is_error:
+            return
+
+    def on_update(self, time, delta_time):
+        if self.is_error:
+            return self.is_running
+        return super().on_update()
+    
+    def on_stop(self, time):
+        self.is_running = False
 
     def setup_game_state(self, game_state):
         game_state.set_motors(self.paddle_left_motor, self.paddle_right_motor, self.ball_left_motor, self.ball_right_motor)
 
     def on_enter(self):
+        self.is_error = False
+
         self.setup_motors()
+        if self.is_error:
+            return
 
         # Setup stall paddles
         stall_left_state = StallPaddleState(self.paddle_left_motor.motor)
