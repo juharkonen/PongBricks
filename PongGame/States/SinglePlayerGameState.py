@@ -10,8 +10,11 @@ class SinglePlayerGameState(PongGameState):
         self.previous_clamped_target_y = PADDLE_CENTER_Y
         super().on_enter()
 
-        self.input_manager.add_touch_sensor_handler(Port.S2, self.on_left_paddle_down)
-        self.input_manager.add_touch_sensor_handler(Port.S1, self.on_left_paddle_up)
+        if not self.try_add_touch_sensor(Port.S1, "S1", self.on_left_paddle_up):
+            return
+
+        if not self.try_add_touch_sensor(Port.S2, "S2", self.on_left_paddle_down):
+            return
 
     def on_update(self, time, delta_time):
         target_y = clamp_paddle_y(self.pong.y - PADDLE_HALF_HEIGHT)

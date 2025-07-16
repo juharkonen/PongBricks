@@ -17,7 +17,8 @@ class GameResultState(State):
         brick.display.text("Player " + str(self.winner_number) + " Wins", (40, 20))
         self.input_manager.add_brick_button_handler(Button.CENTER, self.on_stop)
 
-        self.is_running = True
+        # Skip result state if error is set
+        self.is_running = not self.is_error
 
     def on_exit(self):
         self.is_running = False
@@ -27,6 +28,10 @@ class GameResultState(State):
     
     def on_stop(self, delta_time):
         self.is_running = False
+        self.is_error = False
+    
+    def set_error(self):
+        self.is_error = True
 
 
 

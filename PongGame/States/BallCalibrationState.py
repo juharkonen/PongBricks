@@ -31,8 +31,8 @@ class BallCalibrationState(State):
         self.is_running = True
 
         brick.display.clear()
-        brick.display.text("ARROWS", (30, 50))
-        brick.display.text("move ball to top middle")
+        brick.display.text("ARROWS", (10, 40))
+        brick.display.text("move ball to top center")
         brick.display.text("")
         brick.display.text("CENTER")
         brick.display.text("ready")

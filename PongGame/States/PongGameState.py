@@ -1,9 +1,10 @@
+from pybricks import ev3brick as brick
 from pybricks.parameters import Button
+from pybricks.tools import print
 from States.GameState import GameState
 from Model.PongBallCalculator import PongBallCalculator
 from Model.ScreenGeometry import PADDLE_SPEED, PADDLE_CENTER_Y
 from Model.ScreenCalculator import clamp_paddle_y
-from pybricks.tools import print
 
 class PongGameState(GameState):
     def __init__(self, result_state):
@@ -17,12 +18,17 @@ class PongGameState(GameState):
 
         self.pong.reset()
 
-        # DEBUG - exit on CENTER
+        # DEBUG/ERROR - exit on CENTER
         self.input_manager.add_brick_button_handler(Button.CENTER, self.on_stop)
 
         self.is_running = True
+        self.is_error = False
 
     def on_update(self, time, delta_time):
+        if self.is_error:
+            # Wait for player to exit error state
+            return self.is_running
+
         # Update pong state
         self.pong.set_left_paddle_y(self.paddle_left_target_y, delta_time)
         self.pong.set_right_paddle_y(self.paddle_right_target_y, delta_time)
@@ -42,6 +48,26 @@ class PongGameState(GameState):
 
     def on_stop(self, delta_time):
         self.is_running = False
+
+    def try_add_touch_sensor(self, port, port_text, handler):
+        try:
+            self.input_manager.add_touch_sensor_handler(port, handler)
+            return True
+        except OSError:
+            self.show_sensor_error(port_text)
+            return False
+
+    def show_sensor_error(self, port_text):
+        self.is_error = True
+        self.result_state.set_error()
+
+        brick.display.clear()
+        brick.display.text("ERROR:", (10, 30))
+        brick.display.text("Touch sensor not")
+        brick.display.text("found in Port " + port_text)
+        brick.display.text("")
+        brick.display.text("CENTER")
+        brick.display.text("Menu")
 
     def on_left_paddle_up(self, delta_time):
         delta = PADDLE_SPEED * delta_time
