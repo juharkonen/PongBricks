@@ -21,10 +21,18 @@ class MotorTracker:
     def set_offset(self, angle_offset):
         self.angle_offset = angle_offset
 
+    def track_target(self, target_angle):
+        angle = self.set_target_angle(target_angle)
+        self.motor.track_target(angle + self.direction_offset)
+
     def track_target_step(self, step):
         self.track_target(self.target_angle + step)
 
-    def track_target(self, target_angle):
+    def run_target(self, target_angle, speed, wait = False):
+        angle = self.set_target_angle(target_angle)
+        self.motor.run_target(speed, angle, Stop.BRAKE, wait)
+
+    def set_target_angle(self, target_angle):
         self.target_angle = target_angle
         angle = self.target_angle - self.angle_offset
         
@@ -37,9 +45,10 @@ class MotorTracker:
         # Else keep previous offset if angle unchanged
             
 
-        self.previous_angle = angle
 
-        self.motor.track_target(angle + self.direction_offset)
+
+        self.previous_angle = angle
+        return angle
 
     def reset_angle(self):
         self.motor.reset_angle(0)

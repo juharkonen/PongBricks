@@ -52,8 +52,8 @@ class MainState(NestedState):
 
         # Paddles are at bottom after calibration
         # Increasing angle moves paddles up
-        # Offset paddle motor angles to account for paddle pivot half a stud offset at y = PADDLE_EDGE_THICKNESS
-        paddle_angle_offset = ScreenCalculator.calculate_paddle_angle(PADDLE_EDGE_THICKNESS)
+        # Offset paddle motor angles to account for paddle pivot half a stud offset at y = PADDLE_PIVOT_OFFSET
+        paddle_angle_offset = ScreenCalculator.calculate_paddle_angle(PADDLE_PIVOT_OFFSET)
 
         self.paddle_left_motor = self.try_create_motor(Port.A, "A", PADDLE_GEARS, paddle_angle_offset, Direction.COUNTERCLOCKWISE, PADDLE_CHANGE_DIRECTION_OFFSET)
         if self.is_error:
@@ -66,7 +66,7 @@ class MainState(NestedState):
     def on_update(self, time, delta_time):
         if self.is_error:
             return self.is_running
-        return super().on_update()
+        return super().on_update(time, delta_time)
     
     def on_stop(self, time):
         self.is_running = False

@@ -8,6 +8,7 @@ class GameResultState(State):
         super().__init__()
         self.winner_number = -1
         self.is_running = False
+        self.is_error = False
 
     def set_winner_number(self, winner_number):
         self.winner_number = winner_number

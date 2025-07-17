@@ -4,6 +4,8 @@ from pybricks.tools import print
 from Model.ScreenGeometry import *
 from Model.ScreenCalculator import clamp_paddle_y
 
+RESET_PADDLE_POSITION_SPEED = 200 # deg/sec
+
 def str(number):
     return "{:.2f}".format(number)
 
@@ -31,13 +33,21 @@ class GameState(State):
         angle = GameState.get_paddle_angle(y)
         self.paddle_right_motor.track_target(angle)
 
+    def run_left_paddle_target(self, y, speed, wait = False):
+        angle = GameState.get_paddle_angle(y)
+        self.paddle_left_motor.run_target(angle, speed, wait)
+
+    def run_right_paddle_target(self, y, speed, wait = False):
+        angle = GameState.get_paddle_angle(y)
+        self.paddle_right_motor.run_target(angle, speed, wait)
+
     @staticmethod
     def get_paddle_angle(y):
         clamped_y = clamp_paddle_y(y)
-        # Account for paddle pivot offset PADDLE_EDGE_THICKNESS from paddle bottom edge
-        return ScreenCalculator.calculate_paddle_angle(clamped_y + PADDLE_EDGE_THICKNESS)
+        # Account for paddle pivot offset from screen bottom edge
+        return ScreenCalculator.calculate_paddle_angle(clamped_y + PADDLE_PIVOT_OFFSET)
 
     def reset_to_initial_position(self):
         self.set_ball_target(SCREEN_CENTER_X, SCREEN_CENTER_Y)
-        self.set_left_paddle_target(PADDLE_CENTER_Y)
-        self.set_right_paddle_target(PADDLE_CENTER_Y)
+        self.run_left_paddle_target(PADDLE_CENTER_Y, RESET_PADDLE_POSITION_SPEED)
+        self.run_right_paddle_target(PADDLE_CENTER_Y, RESET_PADDLE_POSITION_SPEED)

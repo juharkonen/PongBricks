@@ -59,8 +59,8 @@ class PongBallCalculator:
 
     def is_paddle_hit(self, paddle_y, hit_y):
         # paddle_y and hit_y are in screen coordinates - account for offset between paddle y and screen y
-        bottom_edge = paddle_y + SCREEN_TO_PADDLE_Y_OFFSET - PADDLE_EDGE_THICKNESS
-        top_edge = bottom_edge + PADDLE_HEIGHT_WITH_THICKNESS
+        bottom_edge = paddle_y
+        top_edge = bottom_edge + PADDLE_HEIGHT
 
         # Add ball radius as tolerance on both sides
         return bottom_edge - BALL_RADIUS <= hit_y and hit_y <= top_edge + BALL_RADIUS
