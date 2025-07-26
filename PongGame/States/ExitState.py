@@ -9,7 +9,7 @@ class ExitState(GameState):
         self.set_left_paddle_target(0.0)
         self.set_right_paddle_target(0.0)
         wait(1000)
-        print("Over and out")
+        print("Meow =^..^=")
     
     def on_update(self, time, delta_time):
         return False

@@ -42,6 +42,8 @@ class PongGameState(GameState):
         return self.is_running and continue_game
 
     def on_exit(self):
+        self.stop_ball_motors()
+        
         if self.result_state != None:
             winner_number = 2 if self.pong.left_missed else 1
             self.result_state.set_winner_number(winner_number)

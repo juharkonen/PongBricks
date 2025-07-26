@@ -1,7 +1,6 @@
 from States.State import State
 from pybricks import ev3brick as brick
 from pybricks.tools import print, StopWatch
-from Model.ScreenCalculator import ScreenCalculator
 from pybricks.parameters import Button
 from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import *

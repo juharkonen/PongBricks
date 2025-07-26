@@ -1,8 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 from pybricks import ev3brick as brick
 from pybricks.parameters import Port, Stop, Direction, Color, Button
-from pybricks.tools import print, wait
-from pybricks.ev3devices import Direction
 from Model.ScreenCalculator import ScreenCalculator, clamp
 from Model.ScreenGeometry import *
 from MotorTracker import MotorTracker
@@ -20,6 +18,7 @@ from States.GameResultState import GameResultState
 from States.AutoplayGameState import AutoplayGameState
 from States.SinglePlayerGameState import SinglePlayerGameState
 from States.DebugState import DebugState
+from States.GameState import str
 
 PADDLE_CHANGE_DIRECTION_OFFSET = 4
 
@@ -41,6 +40,14 @@ class MainState(NestedState):
             self.input_manager.add_brick_button_handler(Button.CENTER, self.on_stop)
             return None
 
+    def setup_ball_motor(self, motor):
+        #kp, ki, kd, integral_range, integral_rate, feed_forward = motor.control.pid()
+        #print("kp " + str(kp) + ", ki " + str(ki) + ", kd " + str(kd) + ", integral_range " + str(integral_range) + ", integral_rate " + str(integral_rate) + ", feed_forward " + str(feed_forward))
+
+        # Tune PID parameters for smoother tracking movement
+        # defaults kp 400.00, ki 1200.00, kd 5.00, integral_range 23.00, integral_rate 5.00, feed_forward 0.00
+        motor.control.pid(200, 1200, 0, 23, 5, 0)
+
     def setup_motors(self):
         self.ball_left_motor = self.try_create_motor(Port.B, "B", BALL_GEARS)
         if self.is_error:
@@ -49,6 +56,9 @@ class MainState(NestedState):
         self.ball_right_motor = self.try_create_motor(Port.C, "C", BALL_GEARS)
         if self.is_error:
             return
+
+        self.setup_ball_motor(self.ball_left_motor.motor)
+        self.setup_ball_motor(self.ball_right_motor.motor)
 
         # Paddles are at bottom after calibration
         # Increasing angle moves paddles up

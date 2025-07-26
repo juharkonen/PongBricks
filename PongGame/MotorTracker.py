@@ -1,8 +1,8 @@
 
 from Model.ScreenGeometry import *
-from pybricks.ev3devices import Motor, Direction
+from pybricks.ev3devices import Motor
 from pybricks.tools import print, wait, StopWatch
-from pybricks.parameters import Stop
+from pybricks.parameters import Stop, Direction
 
 PADDLE_CALIBRATION_DUTY_LIMIT = 30.0
 PADDLE_CALIBRATION_REVERSE_OFFSET = 8.0

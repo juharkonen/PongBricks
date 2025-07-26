@@ -1,10 +1,11 @@
+
+from pybricks.ev3devices import Motor
 from pybricks.parameters import Button
 from pybricks import ev3brick as brick
 from States.GameState import GameState
-from Model.ScreenCalculator import clamp
+from Model.ScreenCalculator import clamp, clamp_paddle_y, ScreenCalculator
 from Model.ScreenGeometry import *
-from pybricks.tools import print
-MOVE_SPEED = 2
+from pybricks.tools import print, wait
 
 class DebugState(GameState):
 
