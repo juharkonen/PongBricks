@@ -7,7 +7,8 @@ from Model.ScreenGeometry import *
 import urandom
 
 CALIBRATION_DUTY_LIMIT = 40.0
-BALL_MOTOR_CALIBRATION_SPEED = 15.0
+BALL_MOTOR_CALIBRATION_SPEED = 10.0
+MOTOR_DURATION_AFTER_INPUT = 0.2
 
 class BallCalibrationState(State):
 
@@ -27,6 +28,8 @@ class BallCalibrationState(State):
 
         self.input_manager.add_brick_button_handler(Button.CENTER, self.stop_calibration)
 
+        self.time_before_stop = 0
+
         self.is_running = True
 
         brick.display.clear()
@@ -37,6 +40,15 @@ class BallCalibrationState(State):
         brick.display.text("ready")
 
     def on_update(self, time, delta_time):
+
+        if (self.time_before_stop > 0 and self.time_before_stop > delta_time):
+            self.time_before_stop -= delta_time
+        elif (self.time_before_stop > 0):
+            # Stop motors
+            self.ball_left_motor.motor.stop()
+            self.ball_right_motor.motor.stop()
+            self.time_before_stop = 0
+
         return self.is_running
 
     def on_exit(self):
@@ -48,8 +60,6 @@ class BallCalibrationState(State):
         self.ball_left_motor.reset_angle()
         self.ball_right_motor.reset_angle()
 
-        #print("ball start angle left " + str(ball_left_motor_start_angle) + " right " + str(ball_right_motor_start_angle))
-
         # Seed urandom
         seed = self.watch.time()
         urandom.seed(seed)
@@ -57,21 +67,20 @@ class BallCalibrationState(State):
 
 
     def left_motor_up(self, delta_time):
-        self.ball_left_motor.track_target_step(BALL_MOTOR_CALIBRATION_SPEED * delta_time)
-        #print("left_motor target " + str(self.ball_left_motor.target))
+        self.set_motor_target(self.ball_left_motor, delta_time)
 
     def left_motor_down(self, delta_time):
-        self.ball_left_motor.track_target_step(-BALL_MOTOR_CALIBRATION_SPEED * delta_time)
-        #print("left_motor target " + str(self.ball_left_motor.target))
+        self.set_motor_target(self.ball_left_motor, -delta_time)
 
     def right_motor_up(self, delta_time):
-        self.ball_right_motor.track_target_step(BALL_MOTOR_CALIBRATION_SPEED * delta_time)
-        #print("right_motor target " + str(self.ball_right_motor.target))
+        self.set_motor_target(self.ball_right_motor, delta_time)
 
     def right_motor_down(self, delta_time):
-        self.ball_right_motor.track_target_step(-BALL_MOTOR_CALIBRATION_SPEED * delta_time)
-        #print("right_motor target " + str(self.ball_right_motor.target))
+        self.set_motor_target(self.ball_right_motor, -delta_time)
+
+    def set_motor_target(self, motor, multiplier):
+        self.time_before_stop = MOTOR_DURATION_AFTER_INPUT
+        return motor.track_target_step(BALL_MOTOR_CALIBRATION_SPEED * multiplier)
 
     def stop_calibration(self, _):
         self.is_running = False
-

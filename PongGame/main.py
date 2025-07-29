@@ -44,7 +44,7 @@ class MainState(NestedState):
         #kp, ki, kd, integral_range, integral_rate, feed_forward = motor.control.pid()
         #print("kp " + str(kp) + ", ki " + str(ki) + ", kd " + str(kd) + ", integral_range " + str(integral_range) + ", integral_rate " + str(integral_rate) + ", feed_forward " + str(feed_forward))
 
-        # Tune PID parameters for smoother tracking movement
+        # Tune PID parameters for smoother ball tracking movement
         # defaults kp 400.00, ki 1200.00, kd 5.00, integral_range 23.00, integral_rate 5.00, feed_forward 0.00
         motor.control.pid(200, 1200, 0, 23, 5, 0)
 
